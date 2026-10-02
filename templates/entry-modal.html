@@ -1,0 +1,104 @@
+<div class="st-chat-setup-modal">
+    <h3 class="st-chat-setup-title" data-i18n="chat_setup.entry_title">Enter Chat</h3>
+
+    <!-- 순서: 캐릭터(누구와) → 페르소나(누구로) → 채팅(어느 채팅에서) → (선택) 로어북.
+         로어북 칸과 요약도 같은 순서(캐릭터 → 페르소나 → 채팅)로 맞춘다 -->
+
+    <section class="st-chat-setup-section">
+        <div class="st-chat-setup-label" data-i18n="chat_setup.character">Character</div>
+        <div class="st-chat-setup-character">
+            <img class="st-chat-setup-avatar" src="{{avatarUrl}}" alt="" />
+            <span class="st-chat-setup-character-name">{{name}}</span>
+            <button type="button" class="st-chat-setup-edit menu_button menu_button_icon" title="Edit character without opening a chat" data-i18n="[title]chat_setup.edit_button_title">
+                <i class="fa-solid fa-pen"></i>
+                <span data-i18n="chat_setup.edit_button">Edit</span>
+            </button>
+        </div>
+    </section>
+
+    <section class="st-chat-setup-section st-chat-setup-persona">
+        <label class="st-chat-setup-label" for="st_chat_setup_persona" data-i18n="chat_setup.persona">Persona</label>
+        <div class="st-chat-setup-persona-row">
+            <img class="st-chat-setup-persona-avatar" alt="" hidden />
+            <select id="st_chat_setup_persona" class="text_pole st-chat-setup-select st-chat-setup-persona-select"></select>
+        </div>
+        <small class="st-chat-setup-hint st-chat-setup-persona-hint" hidden></small>
+    </section>
+
+    <section class="st-chat-setup-section st-chat-setup-chat">
+        <div class="st-chat-setup-label" data-i18n="chat_setup.chat">Chat</div>
+
+        <label class="st-chat-setup-mode">
+            <input type="radio" data-mode-radio value="new" />
+            <span data-i18n="chat_setup.mode_new">New chat</span>
+        </label>
+        <div class="st-chat-setup-mode-body" data-mode-body="new">
+            <input type="text" class="text_pole st-chat-setup-chat-name" enterkeyhint="go" autocomplete="off" maxlength="200"
+                aria-label="Chat name" data-i18n="[aria-label]chat_setup.chat_name" />
+        </div>
+
+        <label class="st-chat-setup-mode">
+            <input type="radio" data-mode-radio value="existing" />
+            <span data-i18n="chat_setup.mode_existing">Existing chat</span>
+            <span class="st-chat-setup-chat-count"></span>
+        </label>
+        <div class="st-chat-setup-mode-body" data-mode-body="existing" hidden>
+            <div class="st-chat-setup-chat-list"></div>
+        </div>
+    </section>
+
+    <!-- 로어북: 자주 바꾸지 않으므로 접어 두고 요약만 보여 준다 -->
+    <details class="st-chat-setup-group st-chat-setup-lore-group">
+        <summary>
+            <i class="fa-solid fa-chevron-down st-chat-setup-chevron" aria-hidden="true"></i>
+            <span class="st-chat-setup-group-title" data-i18n="chat_setup.lore_group">Lorebooks</span>
+            <!-- 접힌 상태 요약: 항목마다 한 줄, 길면 … (전체 이름은 펼친 칸에서) -->
+            <span class="st-chat-setup-lore-summary"></span>
+        </summary>
+
+        <div class="st-chat-setup-group-body">
+            <section class="st-chat-setup-section st-chat-setup-char-lore">
+                <label class="st-chat-setup-label" for="st_chat_setup_char_lore">
+                    <span data-i18n="chat_setup.char_lore">Character Lorebook</span>
+                    <span class="st-chat-setup-scope" data-i18n="chat_setup.scope_character">all chats of this character</span>
+                </label>
+                <select id="st_chat_setup_char_lore" class="text_pole st-chat-setup-select st-chat-setup-char-lore-primary"></select>
+                <details class="st-chat-setup-details">
+                    <summary>
+                        <i class="fa-solid fa-chevron-down st-chat-setup-chevron" aria-hidden="true"></i>
+                        <span data-i18n="chat_setup.char_lore_extras">Additional lorebooks</span>
+                        <span class="st-chat-setup-char-lore-extras-count"></span>
+                    </summary>
+                    <small class="st-chat-setup-hint st-chat-setup-extras-explain" data-i18n="chat_setup.char_lore_extras_explain">Lorebooks that are turned on together with the main one whenever you chat with this character. Saved in this SillyTavern only, not in the character card.</small>
+                    <div class="st-chat-setup-check-list st-chat-setup-char-lore-extras"></div>
+                    <button type="button" class="st-chat-setup-char-lore-create menu_button menu_button_icon">
+                        <i class="fa-solid fa-plus"></i>
+                        <span data-i18n="chat_setup.lore_create_option">New lorebook…</span>
+                    </button>
+                </details>
+                <small class="st-chat-setup-hint st-chat-setup-char-lore-hint" hidden></small>
+            </section>
+
+            <section class="st-chat-setup-section st-chat-setup-persona-lore">
+                <label class="st-chat-setup-label" for="st_chat_setup_persona_lore">
+                    <span data-i18n="chat_setup.persona_lore">Persona Lorebook</span>
+                    <span class="st-chat-setup-scope" data-i18n="chat_setup.scope_persona">all chats of this persona</span>
+                </label>
+                <select id="st_chat_setup_persona_lore" class="text_pole st-chat-setup-select"></select>
+                <small class="st-chat-setup-hint" hidden></small>
+            </section>
+
+            <section class="st-chat-setup-section st-chat-setup-chat-lore">
+                <label class="st-chat-setup-label" for="st_chat_setup_chat_lore">
+                    <span data-i18n="chat_setup.chat_lore">Chat Lorebook</span>
+                    <span class="st-chat-setup-scope" data-i18n="chat_setup.scope_chat">this chat only</span>
+                </label>
+                <select id="st_chat_setup_chat_lore" class="text_pole st-chat-setup-select"></select>
+                <small class="st-chat-setup-hint" hidden></small>
+            </section>
+        </div>
+    </details>
+
+    <!-- 검증 오류와 입장 실패를 버튼 바로 위에 보여 준다 -->
+    <div class="st-chat-setup-error" role="alert" hidden></div>
+</div>

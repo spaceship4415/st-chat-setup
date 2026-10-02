@@ -1,0 +1,509 @@
+/*
+ * 모바일 우선: 기본 규칙은 좁은 터치 화면 기준이고, 넓은 화면은 아래 min-width 미디어 쿼리에서만 보정한다.
+ * 터치 대상은 최소 44px 높이를 지킨다.
+ */
+
+.st-chat-setup-settings .st-chat-setup-hint {
+    display: block;
+    margin: -2px 0 8px 26px;
+    opacity: 0.7;
+}
+
+/* 입장창 폭은 ST .popup(width: 500px, max-width: 100dvw - 2em)에 맡긴다.
+   휴대폰에서는 화면 폭에 맞춰 줄고, 태블릿 이상에서는 500px 로 멈춘다 */
+.st-chat-setup-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+}
+
+.st-chat-setup-title {
+    margin: 0;
+    text-align: center;
+}
+
+.st-chat-setup-label {
+    margin-bottom: 6px;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+.st-chat-setup-character {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    padding: 8px 10px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    background-color: var(--black30a);
+}
+
+.st-chat-setup-avatar {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.st-chat-setup-character-name {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 1.1em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 캐릭터 줄 오른쪽 끝의 수정 버튼 */
+.st-chat-setup-edit {
+    flex-shrink: 0;
+    min-height: 44px;
+    margin: 0 0 0 auto;
+    padding: 0 12px;
+    white-space: nowrap;
+}
+
+.st-chat-setup-modal .st-chat-setup-hint {
+    opacity: 0.7;
+}
+
+/* 드롭다운: 휴대폰에서는 OS 기본 선택 화면이 뜨므로 네이티브 select 를 그대로 쓰고 크기만 맞춘다 */
+.st-chat-setup-select {
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    /* iOS 포커스 확대 방지 */
+    font-size: max(16px, 1em);
+}
+
+.st-chat-setup-persona-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.st-chat-setup-persona-avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* 접힘/펼침 표시: ▼(접힘) → ▲(펼침). 브라우저 기본 삼각형은 flex 요약에서 사라지거나 제각각이라 직접 그린다 */
+.st-chat-setup-popup summary {
+    list-style: none;
+}
+
+.st-chat-setup-popup summary::-webkit-details-marker {
+    display: none;
+}
+
+.st-chat-setup-chevron {
+    flex-shrink: 0;
+    width: 1em;
+    font-size: 0.85em;
+    opacity: 0.7;
+    transition: transform 0.15s ease;
+}
+
+details[open] > summary > .st-chat-setup-chevron {
+    transform: rotate(180deg);
+}
+
+.st-chat-setup-char-lore-create {
+    width: 100%;
+    min-height: 44px;
+    margin: 6px 0 0;
+    justify-content: center;
+}
+
+.st-chat-setup-extras-explain {
+    display: block;
+    margin-bottom: 6px;
+}
+
+/* 로어북 묶음: 접힌 상태에서도 현재 값이 한 줄로 보이게 */
+.st-chat-setup-group {
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+}
+
+.st-chat-setup-group > summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    min-height: 44px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.st-chat-setup-group-title {
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+/* 요약: 제목 줄 아래에 항목별 한 줄씩. 이름이 길면 … 으로 잘라 높이가 늘지 않게 한다 */
+.st-chat-setup-lore-summary {
+    display: flex;
+    flex-basis: 100%;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 0.85em;
+    opacity: 0.75;
+}
+
+.st-chat-setup-lore-summary-row {
+    display: flex;
+    gap: 8px;
+    min-width: 0;
+}
+
+.st-chat-setup-lore-summary-label {
+    flex-shrink: 0;
+    min-width: 4.5em;
+    opacity: 0.8;
+}
+
+.st-chat-setup-lore-summary-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 확인 창·목록 항목: 띄어쓰기 없는 긴 이름도 줄바꿈해서 창 밖으로 넘치지 않게 */
+.st-chat-setup-confirm,
+.st-chat-setup-check-item > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.st-chat-setup-group-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 10px 10px;
+}
+
+/* 입장 처리 중: 버튼에 스피너, 나머지는 누를 수 없게 */
+.st-chat-setup-loading .st-chat-setup-modal {
+    opacity: 0.6;
+}
+
+.st-chat-setup-loading .popup-controls .menu_button {
+    pointer-events: none;
+}
+
+.st-chat-setup-loading .popup-controls .popup-button-cancel {
+    opacity: 0.5;
+}
+
+/* 접이식 목록 (캐릭터 추가 로어북) */
+.st-chat-setup-details {
+    margin-top: 6px;
+}
+
+.st-chat-setup-details > summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    cursor: pointer;
+}
+
+.st-chat-setup-check-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 30dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.st-chat-setup-check-item {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    cursor: pointer;
+}
+
+.st-chat-setup-check-item input {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+}
+
+.st-chat-setup-check-item:has(input:disabled) {
+    opacity: 0.5;
+}
+
+.st-chat-setup-warning {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background-color: rgba(255, 80, 80, 0.15);
+    font-weight: bold;
+}
+
+.st-chat-setup-persona .st-chat-setup-hint,
+.st-chat-setup-persona-lore .st-chat-setup-hint,
+.st-chat-setup-char-lore .st-chat-setup-hint,
+.st-chat-setup-chat-lore .st-chat-setup-hint {
+    display: block;
+    margin-top: 4px;
+}
+
+/* 라벨 옆 적용 범위 배지 (이 채팅만 / 이 캐릭터의 모든 채팅 …) */
+.st-chat-setup-label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.st-chat-setup-scope {
+    padding: 0 6px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+/* 채팅 선택 */
+.st-chat-setup-mode {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    cursor: pointer;
+}
+
+.st-chat-setup-mode input[type="radio"] {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+}
+
+.st-chat-setup-mode input:disabled + span {
+    opacity: 0.5;
+}
+
+.st-chat-setup-chat-count {
+    opacity: 0.6;
+}
+
+/* 휴대폰에서는 폭이 귀하므로 들여쓰지 않는다 (넓은 화면에서만 라디오 아래로 들여씀) */
+.st-chat-setup-mode-body {
+    margin: 0 0 8px;
+}
+
+.st-chat-setup-chat-name {
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    /* iOS 포커스 확대 방지 */
+    font-size: max(16px, 1em);
+}
+
+/* 목록은 창 안에서 따로 스크롤. 휴대폰 화면 높이의 40% 정도만 차지한다 */
+.st-chat-setup-chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 40dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.st-chat-setup-chat-item {
+    /* 목록 높이 제한(max-height) 때문에 줄어들면 내용이 다음 칸과 겹친다. 줄이지 말고 스크롤시킨다 */
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.st-chat-setup-chat-item:has(input:checked) {
+    border-color: var(--SmartThemeQuoteColor);
+    background-color: var(--black30a);
+}
+
+.st-chat-setup-chat-item input[type="radio"] {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0;
+}
+
+.st-chat-setup-chat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.st-chat-setup-chat-title {
+    overflow-wrap: anywhere;
+    font-weight: bold;
+}
+
+.st-chat-setup-chat-meta {
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+
+.st-chat-setup-chat-preview {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.9em;
+    opacity: 0.8;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+.st-chat-setup-badge {
+    padding: 0 6px;
+    border-radius: 6px;
+    background-color: var(--SmartThemeQuoteColor);
+    color: var(--SmartThemeBodyColor);
+    white-space: nowrap;
+}
+
+.st-chat-setup-chat-message {
+    padding: 8px 0;
+    opacity: 0.7;
+}
+
+.st-chat-setup-error {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background-color: rgba(255, 80, 80, 0.15);
+    color: var(--SmartThemeBodyColor);
+}
+
+/* 빠른 수정 */
+.st-chat-setup-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.st-chat-setup-quick-edit .st-chat-setup-label {
+    display: block;
+}
+
+.st-chat-setup-textarea {
+    width: 100%;
+    margin: 0;
+    resize: vertical;
+    /* iOS 는 16px 미만 입력칸에 포커스하면 화면을 확대해 버린다 */
+    font-size: max(16px, 1em);
+}
+
+.st-chat-setup-full-edit,
+.st-chat-setup-add-greeting {
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    justify-content: center;
+}
+
+.st-chat-setup-greetings {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.st-chat-setup-greeting {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.st-chat-setup-icon-button {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    justify-content: center;
+}
+
+/* 입장/취소 버튼: 손가락으로 누르기 쉽게 키우고 폭을 나눠 갖는다.
+   ST 는 버튼 묶음을 내용 폭만큼만 잡아 가운데 두므로, 묶음부터 전체 폭으로 편다 */
+.st-chat-setup-popup .popup-controls {
+    width: 100%;
+    gap: 10px;
+}
+
+.st-chat-setup-popup .popup-controls .popup-button-ok,
+.st-chat-setup-popup .popup-controls .popup-button-cancel {
+    flex: 1;
+    min-height: 44px;
+}
+
+@media (min-width: 768px) {
+    .st-chat-setup-avatar {
+        width: 48px;
+        height: 48px;
+    }
+
+    .st-chat-setup-popup .popup-controls {
+        width: auto;
+    }
+
+    .st-chat-setup-edit,
+    .st-chat-setup-full-edit,
+    .st-chat-setup-add-greeting {
+        min-height: unset;
+    }
+
+    .st-chat-setup-icon-button {
+        width: 32px;
+        height: 32px;
+    }
+
+    .st-chat-setup-textarea,
+    .st-chat-setup-chat-name,
+    .st-chat-setup-select {
+        font-size: inherit;
+    }
+
+    .st-chat-setup-select {
+        min-height: 32px;
+    }
+
+    .st-chat-setup-mode,
+    .st-chat-setup-chat-name {
+        min-height: 32px;
+    }
+
+    .st-chat-setup-mode-body {
+        margin-left: 30px;
+    }
+
+    .st-chat-setup-details > summary,
+    .st-chat-setup-check-item,
+    .st-chat-setup-char-lore-create {
+        min-height: 32px;
+    }
+
+    .st-chat-setup-popup .popup-controls .popup-button-ok,
+    .st-chat-setup-popup .popup-controls .popup-button-cancel {
+        flex: 0 1 auto;
+        min-height: unset;
+    }
+}

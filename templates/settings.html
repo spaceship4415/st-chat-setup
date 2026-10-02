@@ -1,0 +1,32 @@
+<div id="st_chat_setup_settings" class="st-chat-setup-settings">
+    <div class="inline-drawer">
+        <div class="inline-drawer-toggle inline-drawer-header">
+            <b data-i18n="chat_setup.settings_title">Chat Setup</b>
+            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+        </div>
+        <div class="inline-drawer-content">
+            <label class="checkbox_label" for="st_chat_setup_enabled">
+                <input id="st_chat_setup_enabled" type="checkbox" data-setting="enabled" />
+                <span data-i18n="chat_setup.setting_enabled">Show the entry dialog when selecting a character</span>
+            </label>
+            <small class="st-chat-setup-hint" data-i18n="chat_setup.setting_enabled_hint">When off, clicking a character opens its chat immediately, as in vanilla SillyTavern.</small>
+
+            <label class="checkbox_label" for="st_chat_setup_bypass">
+                <input id="st_chat_setup_bypass" type="checkbox" data-setting="bypassWithModifier" />
+                <span data-i18n="chat_setup.setting_bypass">Shift/Ctrl/Alt + click opens the chat immediately</span>
+            </label>
+
+            <label class="checkbox_label" for="st_chat_setup_current">
+                <input id="st_chat_setup_current" type="checkbox" data-setting="interceptCurrentCharacter" />
+                <span data-i18n="chat_setup.setting_current">Also show the dialog when clicking the current character</span>
+            </label>
+            <small class="st-chat-setup-hint" data-i18n="chat_setup.setting_current_hint">When off, clicking the current character opens its character card editor, as usual.</small>
+
+            <label class="checkbox_label" for="st_chat_setup_confirm_scoped">
+                <input id="st_chat_setup_confirm_scoped" type="checkbox" data-setting="confirmScopedLoreChange" />
+                <span data-i18n="chat_setup.setting_confirm_scoped">Ask before changing persona/character lorebooks</span>
+            </label>
+            <small class="st-chat-setup-hint" data-i18n="chat_setup.setting_confirm_scoped_hint">These lorebooks also apply to other chats of the same persona or character.</small>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="st-chat-setup-modal st-chat-setup-quick-edit">
+    <h3 class="st-chat-setup-title" data-i18n="chat_setup.quick_edit_title">Edit Character</h3>
+
+    <div class="st-chat-setup-character">
+        <img class="st-chat-setup-avatar" src="{{avatarUrl}}" alt="" />
+        <span class="st-chat-setup-character-name">{{name}}</span>
+    </div>
+
+    <button type="button" class="st-chat-setup-full-edit menu_button menu_button_icon">
+        <i class="fa-solid fa-up-right-from-square"></i>
+        <span data-i18n="chat_setup.full_edit_button">Open full editor</span>
+    </button>
+    <small class="st-chat-setup-hint st-chat-setup-full-edit-hint" data-i18n="chat_setup.full_edit_hint">Name, avatar, tags and other settings are edited in SillyTavern's editor. Opening it also opens this character's last chat.</small>
+
+    <!-- 필드는 quick-edit.js 가 채운다 -->
+    <div class="st-chat-setup-fields"></div>
+
+    <section class="st-chat-setup-section">
+        <div class="st-chat-setup-label" data-i18n="chat_setup.field_alternate_greetings">Alternate greetings</div>
+        <div class="st-chat-setup-greetings"></div>
+        <button type="button" class="st-chat-setup-add-greeting menu_button menu_button_icon">
+            <i class="fa-solid fa-plus"></i>
+            <span data-i18n="chat_setup.add_greeting">Add greeting</span>
+        </button>
+    </section>
+</div>

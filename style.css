@@ -578,13 +578,9 @@ details[open] > summary > .st-chat-setup-chevron {
     /* 목록 높이 제한(max-height) 때문에 줄어들면 내용이 다음 칸과 겹친다. 줄이지 말고 스크롤시킨다 */
     flex-shrink: 0;
     display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    min-height: 44px;
-    padding: 8px 10px;
+    align-items: stretch;
     border: 1px solid var(--SmartThemeBorderColor);
     border-radius: 8px;
-    cursor: pointer;
 }
 
 .st-chat-setup-chat-item:has(input:checked) {
@@ -592,11 +588,93 @@ details[open] > summary > .st-chat-setup-chevron {
     background-color: var(--black30a);
 }
 
-.st-chat-setup-chat-item input[type="radio"] {
+/* 줄의 왼쪽 전체가 선택 영역 */
+.st-chat-setup-chat-pick {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 4px 8px 10px;
+    cursor: pointer;
+}
+
+.st-chat-setup-chat-pick input[type="radio"] {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
     margin: 2px 0 0;
+}
+
+/* 오른쪽 이름 바꾸기·삭제. 휴대폰에서도 누르기 쉽게 세로로 둔다 */
+.st-chat-setup-chat-actions {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px;
+}
+
+.st-chat-setup-chat-action {
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.75;
+}
+
+.st-chat-setup-chat-action:hover {
+    opacity: 1;
+}
+
+.st-chat-setup-chat-delete:not([aria-disabled="true"]):hover {
+    color: #ff6b6b;
+}
+
+.st-chat-setup-chat-action[aria-disabled="true"] {
+    opacity: 0.3;
+}
+
+/* 검색·정렬 */
+.st-chat-setup-chat-tools {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.st-chat-setup-chat-tools[hidden] {
+    display: none;
+}
+
+.st-chat-setup-chat-search {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    margin: 0;
+    font-size: 16px;
+}
+
+.st-chat-setup-chat-sort {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 40%;
+    margin: 0;
+}
+
+/* 삭제 확인 창 */
+.st-chat-setup-confirm-name {
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.st-chat-setup-confirm-warning {
+    margin: 10px 0 0;
+    color: #ff6b6b;
 }
 
 .st-chat-setup-chat-body {
@@ -753,6 +831,21 @@ details[open] > summary > .st-chat-setup-chevron {
 
     .st-chat-setup-select {
         min-height: 32px;
+    }
+
+    .st-chat-setup-chat-search {
+        min-height: 32px;
+        font-size: inherit;
+    }
+
+    .st-chat-setup-chat-actions {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .st-chat-setup-chat-action {
+        width: 32px;
+        height: 32px;
     }
 
     .st-chat-setup-mode,

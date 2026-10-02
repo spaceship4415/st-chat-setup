@@ -64,3 +64,47 @@ export function isDuplicateChatName(name, chats) {
     const target = name.toLocaleLowerCase();
     return chats.some(chat => chat.fileName.toLocaleLowerCase() === target);
 }
+
+/**
+ * 미리보기용 평문. 채팅 메시지·인사말은 마크다운과 HTML 이 섞여 있어 그대로 보이면
+ * `*웃는다*`, `<div …>` 같은 기호가 내용을 가린다. 표시용으로만 걷어내고 원본은 건드리지 않는다.
+ *
+ * HTML 은 DOMParser 로 글자만 꺼낸다(만든 문서는 화면에 붙지 않아 스크립트·이미지가 실행·로드되지 않는다).
+ * @param {string} text
+ * @param {object} [options]
+ * @param {boolean} [options.keepLines] 줄바꿈 유지(인사말 미리보기). 아니면 한 줄로 합친다(채팅 목록)
+ * @returns {string}
+ */
+export function toPlainPreview(text, { keepLines = false } = {}) {
+    if (!text) return '';
+    let plain = String(text)
+        // 생각(추론) 블록과 코드 블록 표시는 미리보기에 필요 없다
+        .replace(/<think(?:ing)?>[\s\S]*?<\/think(?:ing)?>/gi, ' ')
+        .replace(/```[^\n]*\n?/g, '')
+        // 이미지 ![설명](주소) 는 빼고, 링크 [글자](주소) 는 글자만
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+        .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+        // <br> 은 HTML 을 걷어낸 뒤에도 줄바꿈으로 남긴다
+        .replace(/<br\s*\/?>/gi, '\n');
+
+    if (/<[a-z!/][^>]*>/i.test(plain)) {
+        plain = new DOMParser().parseFromString(plain, 'text/html').body.textContent ?? '';
+    }
+
+    plain = plain
+        // 줄 앞의 제목 #, 인용 >, 목록 기호
+        .replace(/^[ \t]*(?:#{1,6}[ \t]+|>[ \t]?|[-*+][ \t]+)/gm, '')
+        // 강조 기호(*, _, ~~, `) — 낱자 하나짜리 * 나 _ 도 대화체 서술 표시라 모두 뺀다
+        .replace(/\*+|~~|`+/g, '')
+        .replace(/(^|[\s(])_+|_+(?=[\s).,!?]|$)/gm, '$1');
+
+    if (keepLines) {
+        return plain
+            .split('\n')
+            .map(line => line.replace(/[ \t]+/g, ' ').trim())
+            .join('\n')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+    }
+    return plain.replace(/\s+/g, ' ').trim();
+}

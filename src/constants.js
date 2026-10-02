@@ -41,4 +41,6 @@ export const DEFAULT_SETTINGS = Object.freeze({
     lastChatMode: 'new',
     // 새 채팅 기본 이름의 날짜·시각 형식: 'st' | 'date' | 'minute' | 'second' (utils.formatChatStamp)
     chatNameStamp: 'minute',
+    // 기존 채팅 목록 정렬(마지막으로 고른 것을 기억): 'recent' | 'oldest' | 'name' | 'messages'
+    chatListSort: 'recent',
 });

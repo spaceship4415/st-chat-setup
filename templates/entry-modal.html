@@ -83,6 +83,17 @@
             <span class="st-chat-setup-chat-count"></span>
         </label>
         <div class="st-chat-setup-mode-body" data-mode-body="existing" hidden>
+            <!-- 채팅이 몇 개 안 되면 숨긴다(chat-section.js) -->
+            <div class="st-chat-setup-chat-tools" hidden>
+                <input type="search" class="text_pole st-chat-setup-chat-search" enterkeyhint="search" autocomplete="off"
+                    placeholder="Search chats" data-i18n="[placeholder]chat_setup.chat_search;[aria-label]chat_setup.chat_search" aria-label="Search chats" />
+                <select class="text_pole st-chat-setup-select st-chat-setup-chat-sort" aria-label="Sort" data-i18n="[aria-label]chat_setup.chat_sort">
+                    <option value="recent" data-i18n="chat_setup.sort_recent">Recent</option>
+                    <option value="oldest" data-i18n="chat_setup.sort_oldest">Oldest</option>
+                    <option value="name" data-i18n="chat_setup.sort_name">Name</option>
+                    <option value="messages" data-i18n="chat_setup.sort_messages">Most messages</option>
+                </select>
+            </div>
             <div class="st-chat-setup-chat-list"></div>
         </div>
     </section>

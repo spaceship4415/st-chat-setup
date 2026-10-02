@@ -1,11 +1,35 @@
 import { characters, is_send_press, isChatSaving, substituteParams, unshallowCharacter } from '../../../../../script.js';
+import { Popup } from '../../../../popup.js';
+import { deleteCharacterChat, isChatBusy, isOpenChat, renameCharacterChat } from './chat-manage.js';
 import { LOG_PREFIX } from './constants.js';
 import { chatFileExists, getChatList } from './data-source.js';
 import { tr } from './i18n.js';
-import { formatChatStamp, isDuplicateChatName, sanitizeChatName } from './utils.js';
+import { askName } from './name-prompt.js';
+import { getSettings, setSetting } from './settings.js';
+import { formatChatStamp, isDuplicateChatName, sanitizeChatName, toPlainPreview } from './utils.js';
 
 /** @typedef {import('./data-source.js').ChatInfo} ChatInfo */
 /** @typedef {'new' | 'existing'} ChatMode */
+/** @typedef {'recent' | 'oldest' | 'name' | 'messages'} ChatSort */
+
+/** 채팅이 이보다 적으면 검색·정렬 칸을 숨긴다(몇 개뿐이면 오히려 방해) */
+const TOOLS_MIN_CHATS = 4;
+const CHAT_SORTS = ['recent', 'oldest', 'name', 'messages'];
+
+/**
+ * 목록 표시 순서. 원본 배열(최근 순)은 그대로 두고 복사해서 정렬한다
+ * @param {ChatInfo[]} chats
+ * @param {ChatSort} sort
+ */
+function sortChats(chats, sort) {
+    const sorted = [...chats];
+    switch (sort) {
+        case 'oldest': return sorted.reverse();
+        case 'name': return sorted.sort((a, b) => a.fileName.localeCompare(b.fileName, undefined, { numeric: true, sensitivity: 'base' }));
+        case 'messages': return sorted.sort((a, b) => b.count - a.count || b.lastTime - a.lastTime);
+        default: return sorted;
+    }
+}
 
 /**
  * 새 채팅의 시작 인사말 후보. ST(getFirstMessage)가 첫 메시지를 만드는 순서와 같다:
@@ -45,7 +69,8 @@ function buildGreetings(character) {
  */
 export function createChatSection(root, { chid, isStale, onSubmit, onChange = () => { }, personaName = '', initialMode = 'new', stampStyle = 'minute' }) {
     const character = characters[chid];
-    const lastOpenedChat = String(character?.chat ?? '');
+    // 이름 바꾸기·삭제로 달라질 수 있다
+    let lastOpenedChat = String(character?.chat ?? '');
 
     /** @type {ChatMode} */
     let mode = 'new';
@@ -54,12 +79,26 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
     let loadFailed = false;
     /** @type {string | null} */
     let selectedChat = null;
+    let query = '';
+    /** @type {ChatSort} */
+    let sort = /** @type {ChatSort} */ (CHAT_SORTS.includes(getSettings().chatListSort) ? getSettings().chatListSort : 'recent');
+    /** 이름 바꾸기·삭제 처리 중(그 사이 입장하지 않도록) */
+    let managing = false;
+    /** 검색용 평문 미리보기(채팅마다 한 번만 만든다) */
+    const plainPreviews = new WeakMap();
+    const plainPreviewOf = (/** @type {ChatInfo} */ chat) => {
+        if (!plainPreviews.has(chat)) plainPreviews.set(chat, toPlainPreview(chat.preview));
+        return plainPreviews.get(chat);
+    };
 
     const section = /** @type {HTMLElement} */ (root.querySelector('.st-chat-setup-chat'));
     const modeInputs = /** @type {NodeListOf<HTMLInputElement>} */ (section.querySelectorAll('input[data-mode-radio]'));
     const nameInput = /** @type {HTMLInputElement} */ (section.querySelector('.st-chat-setup-chat-name'));
     const list = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-chat-list'));
     const countBadge = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-chat-count'));
+    const tools = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-chat-tools'));
+    const searchInput = /** @type {HTMLInputElement} */ (section.querySelector('.st-chat-setup-chat-search'));
+    const sortSelect = /** @type {HTMLSelectElement} */ (section.querySelector('.st-chat-setup-chat-sort'));
     const greetingBox = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-greeting-pick'));
     const greetingSelect = /** @type {HTMLSelectElement} */ (section.querySelector('.st-chat-setup-greeting-select'));
     const greetingPreview = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-greeting-preview'));
@@ -102,7 +141,7 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
     const renderGreetingPreview = () => {
         const greeting = greetings[Number(greetingSelect.value)] ?? greetings[0];
         greetingPreview.textContent = greeting
-            ? substituteParams(greeting.text, { name1Override: currentPersonaName || undefined, name2Override: character?.name })
+            ? toPlainPreview(substituteParams(greeting.text, { name1Override: currentPersonaName || undefined, name2Override: character?.name }), { keepLines: true })
             : '';
     };
     const renderGreetings = () => {
@@ -143,6 +182,16 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
         errorBox.textContent = '';
     };
 
+    /** 검색어에 맞는 채팅을 지금 정렬 순서로 */
+    const getVisibleChats = () => {
+        if (!chats) return [];
+        const needle = query.trim().toLocaleLowerCase();
+        const matched = needle
+            ? chats.filter(chat => chat.fileName.toLocaleLowerCase().includes(needle) || plainPreviewOf(chat).toLocaleLowerCase().includes(needle))
+            : chats;
+        return sortChats(matched, sort);
+    };
+
     const renderList = () => {
         list.replaceChildren();
 
@@ -159,13 +208,180 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
             return;
         }
 
+        const visible = getVisibleChats();
+        if (visible.length === 0) {
+            list.append(createMessage(tr('chat_search_empty', 'No chats match your search.')));
+            return;
+        }
+
         const groupName = `st_chat_setup_chat_${Math.random().toString(36).slice(2)}`;
-        for (const chat of chats) {
-            list.append(createChatItem(chat, groupName, chat.fileName === selectedChat, chat.fileName === lastOpenedChat, () => {
-                selectedChat = chat.fileName;
-                hideError();
-                notify();
+        for (const chat of visible) {
+            list.append(createChatItem(chat, {
+                groupName,
+                checked: chat.fileName === selectedChat,
+                isLastOpened: chat.fileName === lastOpenedChat,
+                isOpen: isOpenChat(chid, chat.fileName),
+                preview: plainPreviewOf(chat),
+                onSelect: () => {
+                    selectedChat = chat.fileName;
+                    hideError();
+                    notify();
+                },
+                onRename: () => renameChat(chat),
+                onDelete: () => deleteChat(chat),
             }));
+        }
+    };
+
+    /** 고른 채팅이 목록 안에 보이도록(목록만 스크롤하고 창 전체는 움직이지 않는다) */
+    const revealSelected = () => {
+        const checked = list.querySelector('input[type="radio"]:checked');
+        const item = checked?.closest('.st-chat-setup-chat-item');
+        if (!(item instanceof HTMLElement)) return;
+        const listRect = list.getBoundingClientRect();
+        const itemRect = item.getBoundingClientRect();
+        if (itemRect.top < listRect.top || itemRect.bottom > listRect.bottom) {
+            list.scrollTop += itemRect.top - listRect.top - 6;
+        }
+    };
+
+    /** 채팅 수 표시, 기존 채팅 선택 가능 여부, 검색·정렬 칸 표시를 목록에 맞춘다 */
+    const syncCount = () => {
+        const count = chats?.length ?? 0;
+        countBadge.textContent = chats ? `(${count})` : '';
+        if (existingRadio) existingRadio.disabled = !count;
+        tools.hidden = count < TOOLS_MIN_CHATS;
+    };
+
+    // ── 검색·정렬 ──
+    sortSelect.value = sort;
+    sortSelect.addEventListener('change', () => {
+        sort = /** @type {ChatSort} */ (sortSelect.value);
+        if (getSettings().chatListSort !== sort) setSetting('chatListSort', sort);
+        renderList();
+        list.scrollTop = 0;
+    });
+    searchInput.addEventListener('input', () => {
+        query = searchInput.value;
+        // 고른 채팅이 검색 결과에서 빠지면 보이는 첫 채팅을 고른다(안 보이는 채팅으로 입장하지 않도록)
+        const visible = getVisibleChats();
+        if (visible.length && !visible.some(chat => chat.fileName === selectedChat)) {
+            selectedChat = visible[0].fileName;
+            notify();
+        }
+        hideError();
+        renderList();
+        list.scrollTop = 0;
+    });
+    searchInput.addEventListener('keydown', (event) => {
+        // 검색칸의 Enter 는 입장이 아니라 키보드 닫기
+        if (event.key !== 'Enter' || event.isComposing) return;
+        event.preventDefault();
+        event.stopPropagation();
+        searchInput.blur();
+    });
+
+    // ── 이름 바꾸기·삭제 ──
+    const renameChat = async (/** @type {ChatInfo} */ chat) => {
+        if (managing) return;
+        hideError();
+        if (isOpenChat(chid, chat.fileName) && isChatBusy()) {
+            showError(tr('busy', 'Please wait until the reply is finished and the chat is saved.'));
+            return;
+        }
+        const input = await askName({
+            title: tr('chat_rename_title', 'Rename chat'),
+            text: tr('chat_rename_text', 'Enter a new name for this chat.'),
+            defaultName: chat.fileName,
+            okButton: tr('chat_rename_ok', 'Rename'),
+        });
+        if (!input || isStale()) return;
+        const name = sanitizeChatName(input);
+        if (!name) {
+            showError(tr('name_required', 'Enter a chat name.'));
+            return;
+        }
+        if (name === chat.fileName) return;
+
+        managing = true;
+        try {
+            // 대소문자만 바꾸는 것도 Windows 에서는 같은 파일이라 서버가 거절한다. 미리 같은 이름으로 막는다
+            const others = (chats ?? []).filter(c => c !== chat);
+            if (isDuplicateChatName(name, others) || name.toLocaleLowerCase() === chat.fileName.toLocaleLowerCase()
+                || await chatFileExists(chid, name)) {
+                showError(tr('name_duplicate', 'A chat with this name already exists.'));
+                return;
+            }
+            const oldName = chat.fileName;
+            const actual = await renameCharacterChat(chid, oldName, name);
+            if (isStale()) return;
+            // 객체를 그대로 고쳐서, 다른 칸(페르소나·채팅 로어북)이 '다른 채팅으로 바뀜'으로 보고 선택을 되돌리지 않게 한다
+            chat.fileName = actual;
+            if (selectedChat === oldName) selectedChat = actual;
+            if (lastOpenedChat === oldName) lastOpenedChat = actual;
+            toastr.success(tr('chat_renamed', 'Chat renamed.'), actual);
+            refreshDefaultName();
+            renderList();
+            notify();
+        } catch (error) {
+            console.error(LOG_PREFIX, 'failed to rename chat', error);
+            showError(tr('chat_rename_failed', 'Could not rename the chat.'));
+        } finally {
+            managing = false;
+        }
+    };
+
+    const deleteChat = async (/** @type {ChatInfo} */ chat) => {
+        if (managing) return;
+        hideError();
+        if (isOpenChat(chid, chat.fileName)) {
+            showError(tr('chat_delete_open', 'The chat that is open right now cannot be deleted here.'));
+            return;
+        }
+
+        const body = document.createElement('div');
+        const nameLine = document.createElement('div');
+        nameLine.className = 'st-chat-setup-confirm-name';
+        nameLine.textContent = chat.fileName;
+        const metaLine = document.createElement('div');
+        metaLine.textContent = [chat.lastDate, tr('message_count', '{0} messages').replace('{0}', String(chat.count))].filter(Boolean).join(' · ');
+        const warning = document.createElement('p');
+        warning.className = 'st-chat-setup-confirm-warning';
+        warning.textContent = tr('chat_delete_warning', 'The chat file will be deleted. This cannot be undone.');
+        body.append(nameLine, metaLine, warning);
+
+        const confirmed = await Popup.show.confirm(tr('chat_delete_title', 'Delete this chat?'), body.outerHTML, {
+            okButton: tr('chat_delete_ok', 'Delete'),
+            cancelButton: tr('cancel', 'Cancel'),
+        });
+        if (!confirmed || isStale() || !chats?.includes(chat)) return;
+
+        managing = true;
+        try {
+            const remaining = chats.filter(c => c !== chat);
+            await deleteCharacterChat(chid, chat.fileName, remaining.map(c => c.fileName));
+            if (isStale()) return;
+            chats = remaining;
+            // 마지막으로 연 채팅을 지웠으면 ST 처럼 옮긴 곳을 따른다
+            lastOpenedChat = String(characters[chid]?.chat ?? '');
+            if (selectedChat === chat.fileName) {
+                const visible = getVisibleChats();
+                selectedChat = visible[0]?.fileName ?? chats[0]?.fileName ?? null;
+            }
+            toastr.success(tr('chat_deleted', 'Chat deleted.'), chat.fileName);
+            syncCount();
+            refreshDefaultName();
+            renderList();
+            if (!chats.length) {
+                setMode('new');
+            } else {
+                notify();
+            }
+        } catch (error) {
+            console.error(LOG_PREFIX, 'failed to delete chat', error);
+            showError(tr('chat_delete_failed', 'Could not delete the chat.'));
+        } finally {
+            managing = false;
         }
     };
 
@@ -204,10 +420,10 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
         .finally(() => {
             if (isStale()) return;
             const count = chats?.length ?? 0;
-            countBadge.textContent = chats ? `(${count})` : '';
-            if (existingRadio) existingRadio.disabled = !count;
+            syncCount();
             refreshDefaultName();
             renderList();
+            revealSelected();
             if (mode === 'existing' && !count) {
                 setMode('new');
             } else {
@@ -234,7 +450,7 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
          * @returns {Promise<boolean>}
          */
         async validate() {
-            if (is_send_press || isChatSaving) {
+            if (managing || is_send_press || isChatSaving) {
                 showError(tr('busy', 'Please wait until the reply is finished and the chat is saved.'));
                 return false;
             }
@@ -271,7 +487,7 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
                 showError(tr('chat_list_wait', 'Still loading the chat list. Try again in a moment.'));
                 return false;
             }
-            if (!selectedChat || !chats?.some(c => c.fileName === selectedChat)) {
+            if (!selectedChat || !getVisibleChats().some(c => c.fileName === selectedChat)) {
                 showError(tr('chat_required', 'Select a chat.'));
                 return false;
             }
@@ -296,17 +512,26 @@ function createMessage(text) {
 }
 
 /**
- * 기존 채팅 한 줄. 줄 전체가 라디오 버튼의 label 이라 어디를 눌러도 선택된다(모바일 터치 대상 확보).
+ * 기존 채팅 한 줄. 왼쪽(라디오·이름·미리보기)은 통째로 label 이라 어디를 눌러도 선택되고(모바일 터치 대상 확보),
+ * 오른쪽에 이름 바꾸기·삭제 버튼을 둔다(label 밖이라 눌러도 선택이 바뀌지 않는다).
  * 채팅 이름·미리보기는 사용자 데이터라 textContent 로만 넣는다.
  * @param {ChatInfo} chat
- * @param {string} groupName
- * @param {boolean} checked
- * @param {boolean} isLastOpened
- * @param {() => void} onSelect
+ * @param {object} options
+ * @param {string} options.groupName
+ * @param {boolean} options.checked
+ * @param {boolean} options.isLastOpened
+ * @param {boolean} options.isOpen 지금 열려 있는 채팅(삭제 불가)
+ * @param {string} options.preview 평문 미리보기
+ * @param {() => void} options.onSelect
+ * @param {() => void} options.onRename
+ * @param {() => void} options.onDelete
  */
-function createChatItem(chat, groupName, checked, isLastOpened, onSelect) {
+function createChatItem(chat, { groupName, checked, isLastOpened, isOpen, preview, onSelect, onRename, onDelete }) {
+    const item = document.createElement('div');
+    item.className = 'st-chat-setup-chat-item';
+
     const label = document.createElement('label');
-    label.className = 'st-chat-setup-chat-item';
+    label.className = 'st-chat-setup-chat-pick';
 
     const radio = document.createElement('input');
     radio.type = 'radio';
@@ -333,11 +558,48 @@ function createChatItem(chat, groupName, checked, isLastOpened, onSelect) {
         meta.append(' ', badge);
     }
 
-    const preview = document.createElement('div');
-    preview.className = 'st-chat-setup-chat-preview';
-    preview.textContent = chat.preview;
+    const previewLine = document.createElement('div');
+    previewLine.className = 'st-chat-setup-chat-preview';
+    previewLine.textContent = preview;
 
-    body.append(name, meta, preview);
+    body.append(name, meta, previewLine);
     label.append(radio, body);
-    return label;
+
+    const actions = document.createElement('div');
+    actions.className = 'st-chat-setup-chat-actions';
+    const renameButton = createActionButton('fa-pen', tr('chat_rename_title', 'Rename chat'), onRename);
+    const deleteButton = createActionButton('fa-trash-can', tr('chat_delete_button', 'Delete chat'), onDelete);
+    deleteButton.classList.add('st-chat-setup-chat-delete');
+    if (isOpen) {
+        // 막아 두되 누르면 이유를 알려 준다(휴대폰에서는 비활성 버튼의 설명을 볼 수 없다)
+        deleteButton.setAttribute('aria-disabled', 'true');
+        deleteButton.title = tr('chat_delete_open', 'The chat that is open right now cannot be deleted here.');
+    }
+    actions.append(renameButton, deleteButton);
+
+    item.append(label, actions);
+    return item;
+}
+
+/**
+ * @param {string} icon Font Awesome 아이콘 클래스
+ * @param {string} title
+ * @param {() => void} onClick
+ */
+function createActionButton(icon, title, onClick) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'menu_button st-chat-setup-chat-action';
+    button.title = title;
+    button.setAttribute('aria-label', title);
+    const i = document.createElement('i');
+    i.className = `fa-solid ${icon}`;
+    i.setAttribute('aria-hidden', 'true');
+    button.append(i);
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onClick();
+    });
+    return button;
 }

@@ -12,7 +12,7 @@ import { tr } from './i18n.js';
 import { promptCreateLorebook } from './lorebook-create.js';
 import { createPersonaLoreSection } from './persona-lore-section.js';
 import { createPersonaSection } from './persona-section.js';
-import { getSettings } from './settings.js';
+import { getSettings, setSetting } from './settings.js';
 import { openQuickEdit, QUICK_EDIT_OUTCOME } from './quick-edit.js';
 
 /** @type {Popup|null} 지금 떠 있는 입장창. 한 번에 하나만 둔다 */
@@ -83,7 +83,13 @@ export async function openEntryModal(chid) {
 
                 setLoading(popup, true);
                 const entered = await enterAsChosen();
-                if (!entered) chatSection.showError(tr('enter_retry', 'Could not enter the chat. Please try again.'));
+                if (entered) {
+                    // '지난번 선택 기억' 설정용으로 이번에 고른 방식을 남긴다
+                    const { mode } = chatSection.getValue();
+                    if (getSettings().lastChatMode !== mode) setSetting('lastChatMode', mode);
+                } else {
+                    chatSection.showError(tr('enter_retry', 'Could not enter the chat. Please try again.'));
+                }
                 return entered;
             } finally {
                 setLoading(popup, false);
@@ -151,6 +157,8 @@ export async function openEntryModal(chid) {
             updateLoreSummary();
         },
         personaName: personaSection.getNewChatPersonaName(),
+        initialMode: getInitialChatMode(),
+        stampStyle: getSettings().chatNameStamp,
     });
 
     // 접힌 로어북 묶음의 요약. 이름이 길어도 높이가 늘지 않도록 항목마다 한 줄로 두고 넘치면 …으로 자른다.
@@ -204,7 +212,7 @@ export async function openEntryModal(chid) {
         const metadata = {};
         if (persona.newChatLock) metadata.persona = persona.newChatLock;
         if (chatLore.newChatLore) metadata[METADATA_KEY] = chatLore.newChatLore;
-        return await enterNewChat(chid, choice.fileName, metadata, { personaLore, charLore });
+        return await enterNewChat(chid, choice.fileName, metadata, { personaLore, charLore, greetingIndex: choice.greetingIndex });
     }
 
     activePopup = popup;
@@ -218,6 +226,16 @@ export async function openEntryModal(chid) {
     if (result === RESULT_EDIT_CHARACTER) {
         await editCharacter(chid, token);
     }
+}
+
+/**
+ * 입장창을 열 때 처음 고를 채팅 방식(설정 defaultChatMode).
+ * @returns {'new' | 'existing'}
+ */
+function getInitialChatMode() {
+    const settings = getSettings();
+    const mode = settings.defaultChatMode === 'remember' ? settings.lastChatMode : settings.defaultChatMode;
+    return mode === 'existing' ? 'existing' : 'new';
 }
 
 /**

@@ -35,4 +35,10 @@ export const DEFAULT_SETTINGS = Object.freeze({
     avatarSize: 'small',
     // 입장창 [수정] 버튼: 'quick' = 채팅을 열지 않는 빠른 수정 창 / 'full' = 바로 ST 편집 화면
     editButtonMode: 'quick',
+    // 입장창을 열 때 처음 고를 채팅: 'new' / 'existing'(마지막으로 연 채팅) / 'remember'(지난번 입장 때 고른 방식)
+    defaultChatMode: 'new',
+    // 'remember' 용: 마지막으로 입장할 때 고른 방식
+    lastChatMode: 'new',
+    // 새 채팅 기본 이름의 날짜·시각 형식: 'st' | 'date' | 'minute' | 'second' (utils.formatChatStamp)
+    chatNameStamp: 'minute',
 });

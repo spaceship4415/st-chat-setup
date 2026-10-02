@@ -68,6 +68,13 @@
         <div class="st-chat-setup-mode-body" data-mode-body="new">
             <input type="text" class="text_pole st-chat-setup-chat-name" enterkeyhint="go" autocomplete="off" maxlength="200"
                 aria-label="Chat name" data-i18n="[aria-label]chat_setup.chat_name" />
+
+            <!-- 시작 인사말: 대체 인사말이 있는 캐릭터만 보인다 -->
+            <div class="st-chat-setup-greeting-pick" hidden>
+                <label class="st-chat-setup-sublabel" for="st_chat_setup_greeting" data-i18n="chat_setup.greeting_label">Starting greeting</label>
+                <select id="st_chat_setup_greeting" class="text_pole st-chat-setup-select st-chat-setup-greeting-select"></select>
+                <div class="st-chat-setup-greeting-preview"></div>
+            </div>
         </div>
 
         <label class="st-chat-setup-mode">

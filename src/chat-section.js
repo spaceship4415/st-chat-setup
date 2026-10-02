@@ -1,15 +1,37 @@
-import { characters, is_send_press, isChatSaving } from '../../../../../script.js';
-import { humanizedDateTime } from '../../../../RossAscends-mods.js';
+import { characters, is_send_press, isChatSaving, substituteParams, unshallowCharacter } from '../../../../../script.js';
 import { LOG_PREFIX } from './constants.js';
 import { chatFileExists, getChatList } from './data-source.js';
 import { tr } from './i18n.js';
-import { isDuplicateChatName, sanitizeChatName } from './utils.js';
+import { formatChatStamp, isDuplicateChatName, sanitizeChatName } from './utils.js';
 
 /** @typedef {import('./data-source.js').ChatInfo} ChatInfo */
 /** @typedef {'new' | 'existing'} ChatMode */
 
 /**
- * 입장창의 '채팅' 영역: 새 채팅(이름 입력) / 기존 채팅(목록 선택) 중 하나만 받는다.
+ * 새 채팅의 시작 인사말 후보. ST(getFirstMessage)가 첫 메시지를 만드는 순서와 같다:
+ * [첫 메시지, 대체 인사말 1, 2, …] 를 스와이프로 묶고, 첫 메시지가 비어 있으면 그 자리를 뺀다.
+ * 그래서 배열의 순서가 곧 스와이프 번호다.
+ * @param {any} character
+ * @returns {{ label: string, text: string }[]}
+ */
+function buildGreetings(character) {
+    const first = typeof character?.first_mes === 'string' ? character.first_mes : '';
+    const alternates = Array.isArray(character?.data?.alternate_greetings)
+        ? character.data.alternate_greetings.filter((/** @type {any} */ g) => typeof g === 'string')
+        : [];
+    const greetings = [
+        { label: tr('greeting_first', 'First message'), text: first },
+        ...alternates.map((/** @type {string} */ text, /** @type {number} */ i) => ({
+            label: tr('greeting_alternate', 'Alternate greeting {0}').replace('{0}', String(i + 1)),
+            text,
+        })),
+    ];
+    if (!first) greetings.shift();
+    return greetings;
+}
+
+/**
+ * 입장창의 '채팅' 영역: 새 채팅(이름 입력·시작 인사말) / 기존 채팅(목록 선택) 중 하나만 받는다.
  *
  * @param {HTMLElement} root 입장창 dialog
  * @param {object} options
@@ -18,8 +40,10 @@ import { isDuplicateChatName, sanitizeChatName } from './utils.js';
  * @param {() => void} options.onSubmit 이름 칸에서 Enter
  * @param {(state: { mode: ChatMode, chat: ChatInfo | null }) => void} [options.onChange] 모드나 선택한 기존 채팅이 바뀔 때
  * @param {string} [options.personaName] 새 채팅 기본 이름에 넣을 페르소나 이름. 빈 값이면 넣지 않는다
+ * @param {ChatMode} [options.initialMode] 처음 고를 채팅 방식. 기존 채팅이 없으면 목록을 불러온 뒤 새 채팅으로 바꾼다
+ * @param {string} [options.stampStyle] 새 채팅 기본 이름의 날짜·시각 형식(utils.formatChatStamp)
  */
-export function createChatSection(root, { chid, isStale, onSubmit, onChange = () => { }, personaName = '' }) {
+export function createChatSection(root, { chid, isStale, onSubmit, onChange = () => { }, personaName = '', initialMode = 'new', stampStyle = 'minute' }) {
     const character = characters[chid];
     const lastOpenedChat = String(character?.chat ?? '');
 
@@ -36,6 +60,9 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
     const nameInput = /** @type {HTMLInputElement} */ (section.querySelector('.st-chat-setup-chat-name'));
     const list = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-chat-list'));
     const countBadge = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-chat-count'));
+    const greetingBox = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-greeting-pick'));
+    const greetingSelect = /** @type {HTMLSelectElement} */ (section.querySelector('.st-chat-setup-greeting-select'));
+    const greetingPreview = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-greeting-preview'));
     // 오류 칸은 버튼 바로 위(입장창 맨 아래)에 있다. 입장 실패 안내도 같은 칸을 쓴다
     const errorBox = /** @type {HTMLElement} */ (root.querySelector('.st-chat-setup-error'));
     const existingRadio = [...modeInputs].find(input => input.value === 'existing');
@@ -44,15 +71,53 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
     const modeGroupName = `st_chat_setup_mode_${Math.random().toString(36).slice(2)}`;
     for (const input of modeInputs) input.name = modeGroupName;
 
-    // 기본 이름: '캐릭터명 - 페르소나명 - 날짜시간' (ST 기본 '캐릭터명 - 날짜시간' 사이에 페르소나명).
-    // 시각은 창을 연 때로 고정하고, 페르소나가 바뀌면 그 부분만 바꾼다. 사용자가 이름을 직접 고치면 더는 건드리지 않는다
-    const stamp = humanizedDateTime();
+    // ── 새 채팅 기본 이름 ──
+    // '캐릭터 - 페르소나 - 날짜·시각'(형식은 설정). 시각은 창을 연 때로 고정하고, 페르소나가 바뀌면 그 부분만 바꾼다.
+    // 날짜·분 단위면 같은 이름이 이미 있을 수 있으므로 목록을 받은 뒤 ' (2)', ' (3)' … 을 붙인다.
+    // 사용자가 이름을 직접 고치면 더는 건드리지 않는다
+    const stamp = formatChatStamp(stampStyle);
+    let currentPersonaName = personaName;
     let nameEdited = false;
-    const buildDefaultName = (/** @type {string} */ persona) => [character?.name ?? '', persona, stamp]
-        .filter(part => part && part.trim())
-        .join(' - ');
-    nameInput.value = buildDefaultName(personaName);
+    const buildDefaultName = () => {
+        const base = [character?.name ?? '', currentPersonaName, stamp]
+            .filter(part => part && part.trim())
+            .join(' - ');
+        if (!chats) return base;
+        let candidate = base;
+        for (let n = 2; isDuplicateChatName(sanitizeChatName(candidate), chats); n++) {
+            candidate = `${base} (${n})`;
+        }
+        return candidate;
+    };
+    const refreshDefaultName = () => {
+        if (!nameEdited) nameInput.value = buildDefaultName();
+    };
+    refreshDefaultName();
     nameInput.addEventListener('input', () => { nameEdited = true; });
+
+    // ── 시작 인사말 ──
+    // 가벼운(shallow) 캐릭터는 대체 인사말이 아직 없을 수 있어 전체 카드를 받은 뒤 채운다
+    /** @type {{ label: string, text: string }[]} */
+    let greetings = [];
+    const renderGreetingPreview = () => {
+        const greeting = greetings[Number(greetingSelect.value)] ?? greetings[0];
+        greetingPreview.textContent = greeting
+            ? substituteParams(greeting.text, { name1Override: currentPersonaName || undefined, name2Override: character?.name })
+            : '';
+    };
+    const renderGreetings = () => {
+        greetings = buildGreetings(characters[chid]);
+        greetingSelect.replaceChildren(...greetings.map((g, i) => new Option(g.label, String(i))));
+        greetingSelect.value = '0';
+        // 고를 게 하나뿐이면 보여 줄 필요가 없다
+        greetingBox.hidden = greetings.length < 2;
+        renderGreetingPreview();
+    };
+    greetingSelect.addEventListener('change', renderGreetingPreview);
+    greetingBox.hidden = true;
+    unshallowCharacter(chid)
+        .then(() => { if (!isStale()) renderGreetings(); })
+        .catch(error => console.warn(LOG_PREFIX, 'failed to load greetings', error));
 
     const getSelectedChatInfo = () => chats?.find(c => c.fileName === selectedChat) ?? null;
     const notify = () => onChange({ mode, chat: mode === 'existing' ? getSelectedChatInfo() : null });
@@ -120,7 +185,8 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
         setTimeout(() => nameInput.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300);
     });
 
-    setMode('new');
+    // 처음 고를 채팅(설정). 기존 채팅은 목록을 불러오는 동안 '불러오는 중'을 보여 주고, 없으면 새 채팅으로 바꾼다
+    setMode(initialMode);
     renderList();
 
     getChatList(chid)
@@ -140,20 +206,27 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
             const count = chats?.length ?? 0;
             countBadge.textContent = chats ? `(${count})` : '';
             if (existingRadio) existingRadio.disabled = !count;
+            refreshDefaultName();
             renderList();
-            notify();
+            if (mode === 'existing' && !count) {
+                setMode('new');
+            } else {
+                notify();
+            }
         });
 
     return {
         showError,
 
         /**
-         * 페르소나 선택이 바뀌면 새 채팅 기본 이름의 페르소나 부분을 바꾼다. 사용자가 이름을 고쳤으면 그대로 둔다.
+         * 페르소나 선택이 바뀌면 새 채팅 기본 이름의 페르소나 부분과 인사말 미리보기의 {{user}} 를 바꾼다.
+         * 사용자가 이름을 고쳤으면 이름은 그대로 둔다.
          * @param {string} persona 페르소나 이름. 빈 값이면 이름에서 뺀다
          */
         setPersonaName(persona) {
-            if (nameEdited) return;
-            nameInput.value = buildDefaultName(persona);
+            currentPersonaName = persona;
+            refreshDefaultName();
+            renderGreetingPreview();
         },
 
         /**
@@ -194,6 +267,10 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
                 return true;
             }
 
+            if (chats === null && !loadFailed) {
+                showError(tr('chat_list_wait', 'Still loading the chat list. Try again in a moment.'));
+                return false;
+            }
             if (!selectedChat || !chats?.some(c => c.fileName === selectedChat)) {
                 showError(tr('chat_required', 'Select a chat.'));
                 return false;
@@ -201,10 +278,10 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
             return true;
         },
 
-        /** validate() 를 통과한 뒤의 선택값 */
+        /** validate() 를 통과한 뒤의 선택값. greetingIndex 는 새 채팅의 시작 인사말(스와이프 번호) */
         getValue() {
             return mode === 'new'
-                ? { mode, fileName: sanitizeChatName(nameInput.value) }
+                ? { mode, fileName: sanitizeChatName(nameInput.value), greetingIndex: greetings.length > 1 ? Number(greetingSelect.value) || 0 : 0 }
                 : { mode, fileName: /** @type {string} */ (selectedChat), chat: chats?.find(c => c.fileName === selectedChat) };
         },
     };

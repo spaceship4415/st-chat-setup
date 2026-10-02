@@ -1,3 +1,5 @@
+import { humanizedDateTime } from '../../../../RossAscends-mods.js';
+
 /**
  * 서버의 sanitize-filename 과 같은 규칙으로 채팅 이름을 정리한다.
  * 서버는 저장할 때 `${이름}.jsonl` 을 이 규칙으로 바꾸므로, 클라이언트가 미리 맞춰 두지 않으면
@@ -23,6 +25,34 @@ export function sanitizeChatName(name) {
         result = [...result].slice(0, -1).join('');
     }
     return result.replace(/[. ]+$/, '');
+}
+
+/** @typedef {'st' | 'date' | 'minute' | 'second'} ChatStampStyle */
+
+/** 설정 화면에 보일 순서 */
+export const CHAT_STAMP_STYLES = /** @type {const} */ (['st', 'date', 'minute', 'second']);
+
+/**
+ * 새 채팅 기본 이름에 붙이는 날짜·시각(설정 chatNameStamp).
+ * - st: ST 기본 그대로 (2026-10-03@03h08m20s063ms)
+ * - date: 2026-10-03
+ * - minute: 2026-10-03 03h08 (기본)
+ * - second: 2026-10-03 03h08m20s
+ * 채팅 이름은 파일 이름이라 ':' 를 쓸 수 없다(서버가 지운다). 그래서 ST 처럼 h·m·s 로 쓴다.
+ * @param {ChatStampStyle | string} [style]
+ * @param {Date} [date]
+ */
+export function formatChatStamp(style = 'minute', date = new Date()) {
+    if (style === 'st') return humanizedDateTime(date.getTime());
+
+    const pad = (/** @type {number} */ n) => String(n).padStart(2, '0');
+    const day = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    const minute = `${pad(date.getHours())}h${pad(date.getMinutes())}`;
+    switch (style) {
+        case 'date': return day;
+        case 'second': return `${day} ${minute}m${pad(date.getSeconds())}s`;
+        default: return `${day} ${minute}`;
+    }
 }
 
 /**

@@ -1,6 +1,11 @@
 import {
     characters,
+    chat,
     chat_metadata,
+    refreshSwipeButtons,
+    saveChatConditional,
+    syncSwipeToMes,
+    updateMessageBlock,
     event_types,
     eventSource,
     getCurrentChatId,
@@ -230,6 +235,35 @@ async function applyAfterOpen({ charLore }) {
 }
 
 /**
+ * 새 채팅의 첫 메시지를 고른 인사말로 바꾼다.
+ *
+ * ST 는 첫 메시지를 [첫 메시지, 대체 인사말…] 스와이프로 만든다. ST 가 스와이프할 때와 같은 방법
+ * (syncSwipeToMes → 메시지·스와이프 숫자 다시 그리기 → 저장 → MESSAGE_SWIPED)으로 고른 번호로 옮긴다.
+ * 채팅을 다시 불러오지 않으므로 CHAT_CHANGED 가 두 번 나지 않는다.
+ * 실패해도 채팅은 열려 있으므로 알리기만 한다.
+ * @param {number} index 스와이프 번호(0 = 첫 인사말이라 할 일 없음)
+ */
+async function applyStartingGreeting(index) {
+    if (!index) return;
+    try {
+        const first = chat[0];
+        const isFreshGreeting = chat.length === 1 && first && !first.is_user && Array.isArray(first.swipes);
+        if (!isFreshGreeting || index >= first.swipes.length) {
+            console.warn(LOG_PREFIX, 'starting greeting not applied', { index, length: chat.length });
+            return;
+        }
+        if (!syncSwipeToMes(0, index)) return;
+        updateMessageBlock(0, first);
+        refreshSwipeButtons(true);
+        await saveChatConditional();
+        await eventSource.emit(event_types.MESSAGE_SWIPED, 0);
+    } catch (error) {
+        console.error(LOG_PREFIX, 'failed to apply starting greeting', error);
+        toastr.warning(tr('greeting_apply_failed', 'Entered the chat, but could not switch the greeting.'));
+    }
+}
+
+/**
  * @typedef {Object} EntryOptions
  * @property {import('./persona-lore-section.js').PersonaLoreChange | null} [personaLore] 페르소나 로어북 변경
  * @property {import('./char-lore-section.js').CharLoreChange | null} [charLore] 캐릭터 로어북 변경
@@ -310,7 +344,7 @@ export function enterExistingChat(chid, fileName, { persona = null, chatLore = n
  * @param {EntryOptions} [options]
  * @returns {Promise<boolean>}
  */
-export function enterNewChat(chid, fileName, metadata = {}, { personaLore = null, charLore = null } = {}) {
+export function enterNewChat(chid, fileName, metadata = {}, { personaLore = null, charLore = null, greetingIndex = 0 } = {}) {
     return runEntry(chid, async () => {
         await unshallowCharacter(chid);
         const character = characters[chid];
@@ -354,7 +388,11 @@ export function enterNewChat(chid, fileName, metadata = {}, { personaLore = null
                 await discardUnusedChatFile(chid, fileName, integrity);
             }
         }
-        if (opened) await applyAfterOpen({ charLore });
+        if (opened) {
+            await applyAfterOpen({ charLore });
+            // 기본 로어북 변경(charUpdatePrimaryWorld)은 빈 채팅의 첫 메시지를 다시 만들어 첫 스와이프로 되돌리므로 그 뒤에 고른다
+            await applyStartingGreeting(greetingIndex);
+        }
         return opened;
     });
 }

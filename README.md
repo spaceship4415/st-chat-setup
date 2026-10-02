@@ -46,7 +46,7 @@ Cancel, a tap outside the dialog or **Esc** closes it without changing anything.
 - Changing the chat below re-syncs this field to that chat, so pick the chat first if you want to change an existing chat's persona.
 
 ### Chat
-- **New chat:** the name is prefilled as `Character - Persona - date`. Enter on the keyboard enters the chat (ignored while an IME is composing). Names that already exist are refused, so **an existing chat is never overwritten**.
+- **New chat:** the name is prefilled as `Character - Persona - 2026-10-03 03h08` (` (2)`, ` (3)` … added if it already exists; the date format is a setting). For characters with alternate greetings you can pick the **starting greeting**, with a preview; the others stay available as swipes. Enter on the keyboard enters the chat (ignored while an IME is composing). Names that already exist are refused, so **an existing chat is never overwritten**.
 - **Existing chat:** most recent first, with date, message count and the last message. The last opened chat is marked and preselected.
 
 ### Lorebooks
@@ -79,6 +79,8 @@ For name, avatar, tags and the rest, *Open full editor* opens SillyTavern's own 
 | Setting | What it does |
 | --- | --- |
 | Show the entry dialog when selecting a character | Off = vanilla behaviour, enter immediately |
+| Chat selected when the dialog opens | *New chat* (default), *Existing chat (last opened)* or *Remember my last choice*. Characters without chats always start on New chat |
+| Date in new chat names | *SillyTavern default* (`2026-10-03@03h08m20s063ms`), *Date* (`2026-10-03`), *Date + hour:minute* (`2026-10-03 03h08`, default) or *Date + hour:minute:second* (`2026-10-03 03h08m20s`). `:` is not allowed in file names, hence `03h08` |
 | Shift/Ctrl/Alt + click opens the chat immediately | Desktop shortcut to skip the dialog |
 | Also show the dialog when clicking the current character | On by default. Off = clicking the current character opens its card editor |
 | Edit button | *Quick edit* (default): the quick editor, no chat opened. *Full editor*: straight to SillyTavern's editor (opens the character's last chat too, unless it is the current character) |

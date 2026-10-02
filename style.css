@@ -526,6 +526,44 @@ details[open] > summary > .st-chat-setup-chevron {
     font-size: max(16px, 1em);
 }
 
+/* 시작 인사말 고르기 + 앞부분 미리보기 */
+.st-chat-setup-greeting-pick {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.st-chat-setup-greeting-pick[hidden] {
+    display: none;
+}
+
+.st-chat-setup-sublabel {
+    font-size: 0.9em;
+    opacity: 0.75;
+}
+
+.st-chat-setup-greeting-preview {
+    display: -webkit-box;
+    overflow: hidden;
+    padding: 8px 10px;
+    border-left: 3px solid var(--SmartThemeQuoteColor);
+    border-radius: 6px;
+    background-color: var(--black30a);
+    font-size: 0.9em;
+    line-height: 1.4;
+    opacity: 0.85;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+}
+
+.st-chat-setup-greeting-preview:empty {
+    display: none;
+}
+
 /* 목록은 창 안에서 따로 스크롤. 휴대폰 화면 높이의 40% 정도만 차지한다 */
 .st-chat-setup-chat-list {
     display: flex;

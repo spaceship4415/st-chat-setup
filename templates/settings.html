@@ -21,6 +21,23 @@
                     </span>
                 </label>
 
+                <label class="scs-field" for="st_chat_setup_default_mode">
+                    <span class="scs-item-title" data-i18n="chat_setup.setting_default_mode">Chat selected when the dialog opens</span>
+                    <select id="st_chat_setup_default_mode" class="text_pole" data-setting="defaultChatMode">
+                        <option value="new" data-i18n="chat_setup.setting_default_mode_new">New chat</option>
+                        <option value="existing" data-i18n="chat_setup.setting_default_mode_existing">Existing chat (last opened)</option>
+                        <option value="remember" data-i18n="chat_setup.setting_default_mode_remember">Remember my last choice</option>
+                    </select>
+                    <small class="scs-item-hint" data-i18n="chat_setup.setting_default_mode_hint">If the character has no chats yet, New chat is selected.</small>
+                </label>
+
+                <label class="scs-field" for="st_chat_setup_name_stamp">
+                    <span class="scs-item-title" data-i18n="chat_setup.setting_name_stamp">Date in new chat names</span>
+                    <!-- 선택지는 index.js 가 지금 시각으로 만든 예시와 함께 채운다 -->
+                    <select id="st_chat_setup_name_stamp" class="text_pole" data-setting="chatNameStamp"></select>
+                    <small class="scs-item-hint" data-i18n="chat_setup.setting_name_stamp_hint">Chat names are file names, so ':' cannot be used; times are written like 03h08. If the name already exists, (2) is added.</small>
+                </label>
+
                 <label class="scs-item" for="st_chat_setup_current">
                     <input id="st_chat_setup_current" type="checkbox" data-setting="interceptCurrentCharacter" />
                     <span class="scs-item-text">

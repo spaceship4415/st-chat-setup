@@ -66,6 +66,7 @@ Every lorebook field can **create a new lorebook**; existing names are refused r
 
 ### Edit
 **✎ Edit** opens a quick editor for the card's text fields (description, personality, scenario, first message, alternate greetings, examples, main prompt override, post-history instructions, creator's notes) **without opening a chat**.
+With the *Edit button* setting on *Full editor*, Edit skips this and opens SillyTavern's editor directly.
 For name, avatar, tags and the rest, *Open full editor* opens SillyTavern's own editor; for a different character that also opens its last chat, because SillyTavern's editor works on the selected character.
 
 ---
@@ -79,6 +80,8 @@ For name, avatar, tags and the rest, *Open full editor* opens SillyTavern's own 
 | Show the entry dialog when selecting a character | Off = vanilla behaviour, enter immediately |
 | Shift/Ctrl/Alt + click opens the chat immediately | Desktop shortcut to skip the dialog |
 | Also show the dialog when clicking the current character | On by default. Off = clicking the current character opens its card editor |
+| Edit button | *Quick edit* (default): the quick editor, no chat opened. *Full editor*: straight to SillyTavern's editor (opens the character's last chat too, unless it is the current character) |
+| Images in the entry dialog | *Small* (default) or *Large (side by side)*: the character and persona images shown big, at full resolution, with Edit and the persona picker below them |
 | Ask before changing persona/character lorebooks | Confirm changes that also affect other chats |
 
 ---

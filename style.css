@@ -3,10 +3,88 @@
  * 터치 대상은 최소 44px 높이를 지킨다.
  */
 
-.st-chat-setup-settings .st-chat-setup-hint {
-    display: block;
-    margin: -2px 0 8px 26px;
-    opacity: 0.7;
+/* ── 확장 설정 패널 ──
+   묶음(카드)마다 아이콘 제목, 항목은 [체크박스 | 제목 + 안내] 정렬을 통일한다.
+   .scs-body(inline-drawer-content)에는 display 를 주지 않는다 — ST 가 display:none 으로 접고 펴기 때문 */
+.st-chat-setup-settings .scs-header-icon {
+    margin-right: 6px;
+    opacity: 0.8;
+}
+
+.st-chat-setup-settings .scs-group {
+    margin: 8px 0;
+    padding: 6px 10px 4px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    background-color: var(--black30a);
+}
+
+.st-chat-setup-settings .scs-group-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2px 0 6px;
+    font-size: 0.85em;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+    opacity: 0.75;
+}
+
+.st-chat-setup-settings .scs-group-title i {
+    width: 1.1em;
+    color: var(--SmartThemeQuoteColor);
+    text-align: center;
+}
+
+/* 체크박스 항목: 줄 전체가 터치 대상 */
+.st-chat-setup-settings .scs-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+}
+
+.st-chat-setup-settings .scs-item + .scs-item,
+.st-chat-setup-settings .scs-field + .scs-field {
+    border-top: 1px solid color-mix(in srgb, var(--SmartThemeBorderColor) 50%, transparent);
+}
+
+.st-chat-setup-settings .scs-item input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin: 2px 0 0;
+}
+
+.st-chat-setup-settings .scs-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.st-chat-setup-settings .scs-item-title {
+    line-height: 1.35;
+}
+
+.st-chat-setup-settings .scs-item-hint {
+    line-height: 1.35;
+    opacity: 0.65;
+}
+
+/* 드롭다운 항목: 제목 아래 전체 폭 (휴대폰에서 누르기 쉽게) */
+.st-chat-setup-settings .scs-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 0;
+}
+
+.st-chat-setup-settings .scs-field select {
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
 }
 
 /* 입장창 폭은 ST .popup(width: 500px, max-width: 100dvw - 2em)에 맡긴다.
@@ -67,6 +145,85 @@
 
 .st-chat-setup-modal .st-chat-setup-hint {
     opacity: 0.7;
+}
+
+/* 큰 이미지 배치: 캐릭터 | 페르소나 두 칸. 이미지는 ST 아바타 비율(2:3)로 칸 너비를 꽉 채운다 */
+.st-chat-setup-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+}
+
+.st-chat-setup-hero-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.st-chat-setup-hero-frame {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    /* 넓은 화면에서 너무 길어지지 않게 */
+    max-height: 45dvh;
+    overflow: hidden;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 12px;
+    background-color: var(--black30a);
+}
+
+/* 작은 배치의 동그란 아바타 규칙(border-radius: 50%, 고정 크기)을 덮어 사각형으로 꽉 채운다. 모서리는 틀이 둥글게 자른다 */
+.st-chat-setup-hero-frame img {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+}
+
+.st-chat-setup-hero-caption {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 18px 8px 6px;
+    overflow: hidden;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.st-chat-setup-hero-placeholder {
+    font-size: 3em;
+    opacity: 0.3;
+}
+
+/* 페르소나 이미지가 보이면 빈 자리 표시는 숨긴다 */
+.st-chat-setup-hero-frame img:not([hidden]) + .st-chat-setup-hero-placeholder {
+    display: none;
+}
+
+/* 이미지 아래 줄: [수정] | [페르소나 선택] 높이를 맞춘다 */
+.st-chat-setup-hero .st-chat-setup-edit,
+.st-chat-setup-hero .st-chat-setup-persona-select {
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+}
+
+.st-chat-setup-hero .st-chat-setup-edit {
+    justify-content: center;
+}
+
+/* 페르소나 안내 문구는 두 칸 아래에 한 줄로 */
+.st-chat-setup-hero .st-chat-setup-persona-hint {
+    grid-column: 1 / -1;
 }
 
 /* 드롭다운: 휴대폰에서는 OS 기본 선택 화면이 뜨므로 네이티브 select 를 그대로 쓰고 크기만 맞춘다 */

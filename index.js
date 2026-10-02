@@ -10,11 +10,18 @@ async function mountSettingsPanel() {
     root.append(html);
 
     const settings = getSettings();
-    $('#st_chat_setup_settings input[data-setting]').each(function () {
+    $('#st_chat_setup_settings input[type="checkbox"][data-setting]').each(function () {
         const key = this.dataset.setting;
         $(this).prop('checked', !!settings[key]);
         $(this).on('change', function () {
             setSetting(/** @type {any} */ (key), $(this).prop('checked'));
+        });
+    });
+    $('#st_chat_setup_settings select[data-setting]').each(function () {
+        const key = this.dataset.setting;
+        $(this).val(String(settings[key]));
+        $(this).on('change', function () {
+            setSetting(/** @type {any} */ (key), String($(this).val()));
         });
     });
 }

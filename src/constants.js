@@ -31,4 +31,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
     interceptCurrentCharacter: true,
     bypassWithModifier: true,
     confirmScopedLoreChange: true,
+    // 입장창의 캐릭터·페르소나 이미지 크기. 'large' 면 두 이미지를 나란히 크게(원본 이미지) 보여 준다
+    avatarSize: 'small',
+    // 입장창 [수정] 버튼: 'quick' = 채팅을 열지 않는 빠른 수정 창 / 'full' = 바로 ST 편집 화면
+    editButtonMode: 'quick',
 });

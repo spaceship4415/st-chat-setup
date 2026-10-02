@@ -44,8 +44,14 @@ function predictNewChatPersona(chid) {
  * @param {{ chid: number, onNewChatPersonaChange?: (name: string) => void, onTargetPersonaChange?: (id: string | null) => void }} options
  *   onNewChatPersonaChange: 새 채팅 모드에서 선택한 페르소나의 이름('자동'이면 빈 값)이 바뀔 때
  *   onTargetPersonaChange: 입장 후 쓰일 페르소나가 바뀔 때(알 수 없으면 null). 페르소나 로어북 칸이 따라간다
+ *   avatarUrl: 페르소나 이미지 주소(작게: 썸네일 / 크게: 원본)
  */
-export function createPersonaSection(root, { chid, onNewChatPersonaChange = () => { }, onTargetPersonaChange = () => { } }) {
+export function createPersonaSection(root, {
+    chid,
+    onNewChatPersonaChange = () => { },
+    onTargetPersonaChange = () => { },
+    avatarUrl = (id) => getThumbnailUrl('persona', id),
+}) {
     const section = /** @type {HTMLElement} */ (root.querySelector('.st-chat-setup-persona'));
     const select = /** @type {HTMLSelectElement} */ (section.querySelector('.st-chat-setup-persona-select'));
     const avatar = /** @type {HTMLImageElement} */ (section.querySelector('.st-chat-setup-persona-avatar'));
@@ -105,7 +111,7 @@ export function createPersonaSection(root, { chid, onNewChatPersonaChange = () =
             : (value === KEEP && personaExists(chat?.metadata?.persona)) ? chat.metadata.persona
                 : null;
         avatar.hidden = !shownId;
-        if (shownId) avatar.src = getThumbnailUrl('persona', shownId);
+        if (shownId) avatar.src = avatarUrl(shownId);
 
         if (mode === 'existing') {
             hint.textContent = value === KEEP

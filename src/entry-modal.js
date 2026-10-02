@@ -1,5 +1,6 @@
-import { characters, getThumbnailUrl } from '../../../../../script.js';
+import { characters, formatCharacterAvatar, getThumbnailUrl } from '../../../../../script.js';
 import { renderExtensionTemplateAsync } from '../../../../extensions.js';
+import { getUserAvatar } from '../../../../personas.js';
 import { Popup, POPUP_RESULT, POPUP_TYPE } from '../../../../popup.js';
 import { METADATA_KEY } from '../../../../world-info.js';
 import { createCharLoreSection } from './char-lore-section.js';
@@ -34,11 +35,16 @@ export async function openEntryModal(chid) {
     // 앞의 창을 닫는 사이에 또 다른 캐릭터가 눌렸으면 이 요청은 버린다
     if (token !== currentToken) return;
 
+    // 큰 이미지 설정이면 썸네일(96×144)을 키우면 흐려지므로 원본 이미지를 쓴다
+    const largeAvatars = getSettings().avatarSize === 'large';
+    const hasAvatar = character.avatar && character.avatar !== 'none';
+
     let html;
     try {
         html = await renderExtensionTemplateAsync(EXTENSION_NAME, 'templates/entry-modal', {
             name: character.name,
-            avatarUrl: getThumbnailUrl('avatar', character.avatar),
+            avatarUrl: largeAvatars && hasAvatar ? formatCharacterAvatar(character.avatar) : getThumbnailUrl('avatar', character.avatar),
+            largeAvatars,
         });
     } catch (error) {
         console.error(LOG_PREFIX, 'failed to render entry modal', error);
@@ -86,15 +92,22 @@ export async function openEntryModal(chid) {
         },
     });
     popup.dlg.classList.add('st-chat-setup-popup');
-    popup.dlg.querySelector('.st-chat-setup-edit')?.addEventListener('click', () => {
+    const editButton = popup.dlg.querySelector('.st-chat-setup-edit');
+    editButton?.addEventListener('click', () => {
         popup.complete(RESULT_EDIT_CHARACTER);
     });
+    // 기본 수정(ST 편집 화면) 모드면 버튼 설명도 그에 맞게. ST 가 data-i18n 을 다시 번역하므로 키를 바꾼다
+    if (editButton && getSettings().editButtonMode === 'full') {
+        editButton.setAttribute('data-i18n', '[title]chat_setup.edit_button_title_full');
+        editButton.setAttribute('title', tr('edit_button_title_full', 'Open SillyTavern\'s character editor'));
+    }
     // 페르소나 영역은 채팅 영역의 모드/선택에 따라 달라지므로 먼저 만든다.
     // 반대로 새 채팅 기본 이름에는 페르소나 이름이 들어가므로, 페르소나가 바뀌면 채팅 영역에 알린다
     /** @type {ReturnType<typeof createPersonaLoreSection>} */
     let personaLoreSection;
     const personaSection = createPersonaSection(popup.dlg, {
         chid,
+        avatarUrl: largeAvatars ? getUserAvatar : (id) => getThumbnailUrl('persona', id),
         onNewChatPersonaChange: (name) => chatSection?.setPersonaName(name),
         onTargetPersonaChange: (id) => {
             personaLoreSection?.setTarget(id);
@@ -231,13 +244,20 @@ function setLoading(popup, loading) {
 }
 
 /**
- * 입장창의 [수정]: 채팅을 열지 않는 빠른 수정 창을 띄운다.
- * 빠른 수정을 닫으면(저장/뒤로) 같은 캐릭터의 입장창으로 돌아오고,
- * '전체 수정'을 고르면 ST 편집 화면으로 간다(이때만 마지막 채팅이 열린다).
+ * 입장창의 [수정].
+ * - 간편 수정(기본): 채팅을 열지 않는 빠른 수정 창. 닫으면(저장/뒤로) 같은 캐릭터의 입장창으로 돌아오고,
+ *   '전체 수정'을 고르면 ST 편집 화면으로 간다.
+ * - 기본 수정(설정 editButtonMode = 'full'): 바로 ST 편집 화면.
+ * ST 편집 화면은 다른 캐릭터면 그 캐릭터의 마지막 채팅도 함께 연다(지금 캐릭터면 채팅은 그대로).
  * @param {number} chid
  * @param {number} token
  */
 async function editCharacter(chid, token) {
+    if (getSettings().editButtonMode === 'full') {
+        await openCharacterEditor(chid);
+        return;
+    }
+
     let outcome;
     try {
         outcome = await openQuickEdit(chid);

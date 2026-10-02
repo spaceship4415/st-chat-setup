@@ -1,32 +1,83 @@
 <div id="st_chat_setup_settings" class="st-chat-setup-settings">
     <div class="inline-drawer">
         <div class="inline-drawer-toggle inline-drawer-header">
-            <b data-i18n="chat_setup.settings_title">Chat Setup</b>
+            <b><i class="fa-solid fa-door-open scs-header-icon"></i><span data-i18n="chat_setup.settings_title">Chat Setup</span></b>
             <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
         </div>
-        <div class="inline-drawer-content">
-            <label class="checkbox_label" for="st_chat_setup_enabled">
-                <input id="st_chat_setup_enabled" type="checkbox" data-setting="enabled" />
-                <span data-i18n="chat_setup.setting_enabled">Show the entry dialog when selecting a character</span>
-            </label>
-            <small class="st-chat-setup-hint" data-i18n="chat_setup.setting_enabled_hint">When off, clicking a character opens its chat immediately, as in vanilla SillyTavern.</small>
+        <div class="inline-drawer-content scs-body">
 
-            <label class="checkbox_label" for="st_chat_setup_bypass">
-                <input id="st_chat_setup_bypass" type="checkbox" data-setting="bypassWithModifier" />
-                <span data-i18n="chat_setup.setting_bypass">Shift/Ctrl/Alt + click opens the chat immediately</span>
-            </label>
+            <!-- 입장 동작 -->
+            <section class="scs-group">
+                <div class="scs-group-title">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span data-i18n="chat_setup.settings_group_entry">Entering</span>
+                </div>
 
-            <label class="checkbox_label" for="st_chat_setup_current">
-                <input id="st_chat_setup_current" type="checkbox" data-setting="interceptCurrentCharacter" />
-                <span data-i18n="chat_setup.setting_current">Also show the dialog when clicking the current character</span>
-            </label>
-            <small class="st-chat-setup-hint" data-i18n="chat_setup.setting_current_hint">When off, clicking the current character opens its character card editor, as usual.</small>
+                <label class="scs-item" for="st_chat_setup_enabled">
+                    <input id="st_chat_setup_enabled" type="checkbox" data-setting="enabled" />
+                    <span class="scs-item-text">
+                        <span class="scs-item-title" data-i18n="chat_setup.setting_enabled">Show the entry dialog when selecting a character</span>
+                        <small class="scs-item-hint" data-i18n="chat_setup.setting_enabled_hint">When off, clicking a character opens its chat immediately, as in vanilla SillyTavern.</small>
+                    </span>
+                </label>
 
-            <label class="checkbox_label" for="st_chat_setup_confirm_scoped">
-                <input id="st_chat_setup_confirm_scoped" type="checkbox" data-setting="confirmScopedLoreChange" />
-                <span data-i18n="chat_setup.setting_confirm_scoped">Ask before changing persona/character lorebooks</span>
-            </label>
-            <small class="st-chat-setup-hint" data-i18n="chat_setup.setting_confirm_scoped_hint">These lorebooks also apply to other chats of the same persona or character.</small>
+                <label class="scs-item" for="st_chat_setup_current">
+                    <input id="st_chat_setup_current" type="checkbox" data-setting="interceptCurrentCharacter" />
+                    <span class="scs-item-text">
+                        <span class="scs-item-title" data-i18n="chat_setup.setting_current">Also show the dialog when clicking the current character</span>
+                        <small class="scs-item-hint" data-i18n="chat_setup.setting_current_hint">When off, clicking the current character opens its character card editor, as usual.</small>
+                    </span>
+                </label>
+
+                <label class="scs-item" for="st_chat_setup_bypass">
+                    <input id="st_chat_setup_bypass" type="checkbox" data-setting="bypassWithModifier" />
+                    <span class="scs-item-text">
+                        <span class="scs-item-title" data-i18n="chat_setup.setting_bypass">Shift/Ctrl/Alt + click opens the chat immediately</span>
+                        <small class="scs-item-hint" data-i18n="chat_setup.setting_bypass_hint">A shortcut for desktop.</small>
+                    </span>
+                </label>
+            </section>
+
+            <!-- 입장창 화면 -->
+            <section class="scs-group">
+                <div class="scs-group-title">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <span data-i18n="chat_setup.settings_group_dialog">Entry dialog</span>
+                </div>
+
+                <label class="scs-field" for="st_chat_setup_avatar_size">
+                    <span class="scs-item-title" data-i18n="chat_setup.setting_avatar_size">Images in the entry dialog</span>
+                    <select id="st_chat_setup_avatar_size" class="text_pole" data-setting="avatarSize">
+                        <option value="small" data-i18n="chat_setup.setting_avatar_small">Small</option>
+                        <option value="large" data-i18n="chat_setup.setting_avatar_large">Large (side by side)</option>
+                    </select>
+                </label>
+
+                <label class="scs-field" for="st_chat_setup_edit_mode">
+                    <span class="scs-item-title" data-i18n="chat_setup.setting_edit_mode">Edit button</span>
+                    <select id="st_chat_setup_edit_mode" class="text_pole" data-setting="editButtonMode">
+                        <option value="quick" data-i18n="chat_setup.setting_edit_quick">Quick edit (no chat opened)</option>
+                        <option value="full" data-i18n="chat_setup.setting_edit_full">Full editor (SillyTavern)</option>
+                    </select>
+                    <small class="scs-item-hint" data-i18n="chat_setup.setting_edit_mode_hint">The full editor opens the character's last chat too, unless it is the character you are chatting with.</small>
+                </label>
+            </section>
+
+            <!-- 안전장치 -->
+            <section class="scs-group">
+                <div class="scs-group-title">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span data-i18n="chat_setup.settings_group_safety">Safety</span>
+                </div>
+
+                <label class="scs-item" for="st_chat_setup_confirm_scoped">
+                    <input id="st_chat_setup_confirm_scoped" type="checkbox" data-setting="confirmScopedLoreChange" />
+                    <span class="scs-item-text">
+                        <span class="scs-item-title" data-i18n="chat_setup.setting_confirm_scoped">Ask before changing persona/character lorebooks</span>
+                        <small class="scs-item-hint" data-i18n="chat_setup.setting_confirm_scoped_hint">These lorebooks also apply to other chats of the same persona or character.</small>
+                    </span>
+                </label>
+            </section>
         </div>
     </div>
 </div>

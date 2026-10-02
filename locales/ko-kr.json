@@ -65,6 +65,7 @@
     "chat_setup.lore_group": "로어북",
     "chat_setup.lore_create_option": "새 로어북 만들기…",
     "chat_setup.lore_create_title": "새 로어북",
+    "chat_setup.lore_create_ok": "만들기",
     "chat_setup.lore_create_text": "새 로어북의 이름을 입력하세요.",
     "chat_setup.lore_create_exists": "같은 이름의 로어북이 이미 있습니다. 목록에서 선택하세요.",
     "chat_setup.lore_create_failed": "로어북을 만들지 못했습니다.",

@@ -126,10 +126,11 @@
     object-fit: cover;
 }
 
+/* 캐릭터 이름과 페르소나 선택 글자를 같은 크기로(페르소나 select 는 iOS 확대 방지로 16px) */
 .st-chat-setup-character-name {
     min-width: 0;
     overflow: hidden;
-    font-size: 1.1em;
+    font-size: 16px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -251,18 +252,49 @@
     font-size: max(16px, 1em);
 }
 
-.st-chat-setup-persona-row {
+/* 작은 배치의 페르소나 줄: 캐릭터 줄(.st-chat-setup-character 카드)과 같은 모양.
+   이미지 자리는 캐릭터와 같은 44px 원, 선택칸은 카드 안에서 테두리 없이 이름처럼 보이게 */
+.st-chat-setup-avatar-slot {
+    position: relative;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: var(--black30a);
 }
 
 .st-chat-setup-persona-avatar {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     flex-shrink: 0;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.st-chat-setup-avatar-placeholder {
+    opacity: 0.4;
+}
+
+/* 이미지가 보이면 빈 자리 아이콘은 숨긴다 */
+.st-chat-setup-avatar-slot img:not([hidden]) + .st-chat-setup-avatar-placeholder {
+    display: none;
+}
+
+.st-chat-setup-persona-row .st-chat-setup-persona-select {
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+    margin: 0;
+    padding: 0 22px 0 0;
+    border: none;
+    background-color: transparent;
+    color: var(--SmartThemeBodyColor);
+    font-size: 16px;
+    text-overflow: ellipsis;
 }
 
 /* 접힘/펼침 표시: ▼(접힘) → ▲(펼침). 브라우저 기본 삼각형은 flex 요약에서 사라지거나 제각각이라 직접 그린다 */
@@ -346,6 +378,15 @@ details[open] > summary > .st-chat-setup-chevron {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* 새 로어북 이름 입력: 긴 기본 이름(채팅 이름 등)이 잘리지 않게 여러 줄로 감싸 보여 준다 */
+.st-chat-setup-name-popup .popup-input {
+    width: 100%;
+    /* iOS 포커스 확대 방지 */
+    font-size: max(16px, 1em);
+    overflow-wrap: anywhere;
+    resize: none;
 }
 
 /* 확인 창·목록 항목: 띄어쓰기 없는 긴 이름도 줄바꿈해서 창 밖으로 넘치지 않게 */

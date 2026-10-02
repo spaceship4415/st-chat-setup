@@ -43,10 +43,15 @@
         </div>
     </section>
 
+    <!-- 캐릭터 줄과 같은 카드 모양: [이미지 | 이름(선택) ▼] -->
     <section class="st-chat-setup-section st-chat-setup-persona">
         <label class="st-chat-setup-label" for="st_chat_setup_persona" data-i18n="chat_setup.persona">Persona</label>
-        <div class="st-chat-setup-persona-row">
-            <img class="st-chat-setup-persona-avatar" alt="" hidden />
+        <div class="st-chat-setup-character st-chat-setup-persona-row">
+            <span class="st-chat-setup-avatar-slot">
+                <img class="st-chat-setup-persona-avatar" alt="" hidden />
+                <!-- 페르소나를 미리 알 수 없을 때(자동·고정 없는 채팅 유지) 빈 자리 대신 -->
+                <i class="fa-solid fa-user st-chat-setup-avatar-placeholder" aria-hidden="true"></i>
+            </span>
             <select id="st_chat_setup_persona" class="text_pole st-chat-setup-select st-chat-setup-persona-select"></select>
         </div>
         <small class="st-chat-setup-hint st-chat-setup-persona-hint" hidden></small>

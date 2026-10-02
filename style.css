@@ -209,16 +209,32 @@
     display: none;
 }
 
-/* 이미지 아래 줄: [수정] | [페르소나 선택] 높이를 맞춘다 */
+/* 이미지 아래 줄: [수정] | [페르소나 선택]
+   위치·크기가 같아도 버튼(가운데 글자, 진한 배경)과 select(왼쪽 글자, 반투명 배경)는 모양이 달라
+   어긋나 보인다. 배경·테두리·모서리·글자 크기와 가운데 정렬을 맞춘다 */
 .st-chat-setup-hero .st-chat-setup-edit,
 .st-chat-setup-hero .st-chat-setup-persona-select {
     width: 100%;
     min-height: 44px;
     margin: 0;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 8px;
+    background-color: var(--black30a);
+    color: var(--SmartThemeBodyColor);
+    /* select 는 16px 미만이면 iOS 가 확대하므로 버튼도 16px 로 맞춘다 */
+    font-size: 16px;
 }
 
 .st-chat-setup-hero .st-chat-setup-edit {
     justify-content: center;
+}
+
+/* select 글자를 가운데로. 오른쪽 ▼ 자리만큼 왼쪽도 비워 진짜 가운데에 오게 한다 */
+.st-chat-setup-hero .st-chat-setup-persona-select {
+    padding-right: 22px;
+    padding-left: 22px;
+    text-align: center;
+    text-align-last: center;
 }
 
 /* 페르소나 안내 문구는 두 칸 아래에 한 줄로 */
@@ -560,6 +576,23 @@ details[open] > summary > .st-chat-setup-chevron {
 
 .st-chat-setup-quick-edit .st-chat-setup-label {
     display: block;
+    margin-bottom: 0;
+}
+
+/* 항목 제목 줄: 제목 왼쪽, '크게 열어서 쓰기' 버튼 오른쪽 */
+.st-chat-setup-field-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+/* 대체 인사말 줄 오른쪽 버튼 묶음: 크게 열기 위, 삭제 아래 */
+.st-chat-setup-greeting-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .st-chat-setup-textarea {

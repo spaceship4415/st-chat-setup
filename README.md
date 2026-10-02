@@ -66,6 +66,7 @@ Every lorebook field can **create a new lorebook**; existing names are refused r
 
 ### Edit
 **✎ Edit** opens a quick editor for the card's text fields (description, personality, scenario, first message, alternate greetings, examples, main prompt override, post-history instructions, creator's notes) **without opening a chat**.
+Each field (and each alternate greeting) has a ⤢ button that opens it in SillyTavern's full-screen editor; what you type there goes straight back into the field.
 With the *Edit button* setting on *Full editor*, Edit skips this and opens SillyTavern's editor directly.
 For name, avatar, tags and the rest, *Open full editor* opens SillyTavern's own editor; for a different character that also opens its last chat, because SillyTavern's editor works on the selected character.
 

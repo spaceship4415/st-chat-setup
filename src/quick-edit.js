@@ -168,17 +168,38 @@ function createForm(character) {
         return textarea;
     };
 
+    /**
+     * '크게 열어서 쓰기' 버튼. ST 의 editor_maximize 기능을 그대로 쓴다 — 클래스와 data-for(대상 textarea id)만
+     * 달면 ST(chats.js)가 큰 편집 창을 띄우고, 거기서 쓴 내용을 원래 칸에 input 이벤트로 바로 반영한다.
+     * @param {string} targetId
+     */
+    const createExpandButton = (targetId) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'editor_maximize menu_button st-chat-setup-icon-button';
+        button.dataset.for = targetId;
+        button.title = tr('expand_editor', 'Expand the editor');
+        button.innerHTML = '<i class="fa-solid fa-maximize"></i>';
+        return button;
+    };
+
+    // 대체 인사말은 추가·삭제되므로 겹치지 않는 id 를 계속 늘려 가며 쓴다
+    let greetingSeq = 0;
     const addGreetingRow = (value) => {
         const row = document.createElement('div');
         row.className = 'st-chat-setup-greeting';
         const textarea = createTextarea(value, 3);
+        textarea.id = `st_chat_setup_greeting_${greetingSeq++}`;
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'menu_button st-chat-setup-icon-button';
         remove.title = tr('remove_greeting', 'Remove greeting');
         remove.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
         remove.addEventListener('click', () => row.remove());
-        row.append(textarea, remove);
+        const buttons = document.createElement('div');
+        buttons.className = 'st-chat-setup-greeting-buttons';
+        buttons.append(createExpandButton(textarea.id), remove);
+        row.append(textarea, buttons);
         greetingsBox?.append(row);
         return textarea;
     };
@@ -194,12 +215,15 @@ function createForm(character) {
             for (const field of FIELDS) {
                 const section = document.createElement('section');
                 section.className = 'st-chat-setup-section';
+                const head = document.createElement('div');
+                head.className = 'st-chat-setup-field-head';
                 const label = document.createElement('label');
                 label.className = 'st-chat-setup-label';
                 label.textContent = tr(`field_${field.key}`, field.label);
                 const textarea = createTextarea(readField(character, field), field.rows);
                 label.htmlFor = textarea.id = `st_chat_setup_field_${field.key}`;
-                section.append(label, textarea);
+                head.append(label, createExpandButton(textarea.id));
+                section.append(head, textarea);
                 fieldsBox?.append(section);
                 inputs.set(field.key, { field, textarea, initial: textarea.value });
             }

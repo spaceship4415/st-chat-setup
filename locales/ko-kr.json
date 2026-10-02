@@ -35,6 +35,7 @@
     "chat_setup.setting_avatar_size": "입장창 이미지",
     "chat_setup.setting_avatar_small": "작게",
     "chat_setup.setting_avatar_large": "크게 (나란히)",
+    "chat_setup.expand_editor": "크게 열어서 쓰기",
     "chat_setup.setting_edit_mode": "수정 버튼",
     "chat_setup.setting_edit_quick": "간편 수정 (채팅 안 열림)",
     "chat_setup.setting_edit_full": "기본 수정 (SillyTavern 편집 화면)",

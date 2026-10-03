@@ -1,5 +1,6 @@
 import { renderExtensionTemplateAsync } from '../../../extensions.js';
 import { EXTENSION_NAME, LOG_PREFIX } from './src/constants.js';
+import { installDuplicateButtons, refreshDuplicateButtons } from './src/duplicate.js';
 import { openEntryModal } from './src/entry-modal.js';
 import { installInterceptor } from './src/interceptor.js';
 import { tr } from './src/i18n.js';
@@ -18,6 +19,7 @@ async function mountSettingsPanel() {
         $(this).prop('checked', !!settings[key]);
         $(this).on('change', function () {
             setSetting(/** @type {any} */ (key), $(this).prop('checked'));
+            if (key === 'listDuplicateButton') refreshDuplicateButtons();
         });
     });
     $('#st_chat_setup_settings select[data-setting]').each(function () {
@@ -49,6 +51,7 @@ function fillChatNameStampOptions() {
 jQuery(async () => {
     loadSettings();
     installInterceptor(openEntryModal);
+    installDuplicateButtons();
 
     try {
         await mountSettingsPanel();

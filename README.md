@@ -74,6 +74,19 @@ For name, avatar, tags and the rest, *Open full editor* opens SillyTavern's own 
 
 ---
 
+## Duplicate
+
+Each character in the character list gets a **duplicate button** (on by default). It duplicates right away, without opening the editor or asking.
+
+- The copy is named **`Name (2)`**, or the next free number (`(3)`, `(4)` …). Duplicating `Seraphina (2)` gives `Seraphina (3)`, not `Seraphina (2) (2)`.
+- Everything in the card (description, greetings, embedded lorebook, regex scripts …) and tags come along, as with SillyTavern's own duplicate.
+- Settings SillyTavern keeps outside the card, keyed by the avatar file, are copied too: **additional lorebooks, the character's author's note, regex permission and persona lock**.
+- Linked lorebooks are **shared**, not copied: editing the lorebook affects both characters.
+- **Chats are not copied.** The copy starts with no chats.
+- Hidden in grid view and bulk-edit mode.
+
+---
+
 ## Settings
 
 **Extensions → Chat Setup**
@@ -84,6 +97,7 @@ For name, avatar, tags and the rest, *Open full editor* opens SillyTavern's own 
 | Chat selected when the dialog opens | *New chat* (default), *Existing chat (last opened)* or *Remember my last choice*. Characters without chats always start on New chat |
 | Date in new chat names | *SillyTavern default* (`2026-10-03@03h08m20s063ms`), *Date* (`2026-10-03`), *Date + hour:minute* (`2026-10-03 03h08`, default) or *Date + hour:minute:second* (`2026-10-03 03h08m20s`). `:` is not allowed in file names, hence `03h08` |
 | Shift/Ctrl/Alt + click opens the chat immediately | Desktop shortcut to skip the dialog |
+| Duplicate button in the character list | On by default. See [Duplicate](#duplicate) |
 | Also show the dialog when clicking the current character | On by default. Off = clicking the current character opens its card editor |
 | Edit button | *Quick edit* (default): the quick editor, no chat opened. *Full editor*: straight to SillyTavern's editor (opens the character's last chat too, unless it is the current character). *Both*: both buttons (shortened to icon / "ST" in the small layout on phones) |
 | Images in the entry dialog | *Small* (default) or *Large (side by side)*: the character and persona images shown big, at full resolution, with Edit and the persona picker below them |

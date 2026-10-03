@@ -25,6 +25,8 @@ export function installInterceptor(handler) {
  */
 function onCaptureClick(event) {
     if (!(event.target instanceof Element)) return;
+    // [복제] 버튼은 duplicate.js 가 처리한다
+    if (event.target.closest(SELECTORS.duplicateButton)) return;
 
     const card = event.target.closest(`${SELECTORS.characterList} ${SELECTORS.characterCard}`);
     if (!(card instanceof HTMLElement)) return;

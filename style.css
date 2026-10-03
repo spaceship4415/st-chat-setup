@@ -136,12 +136,39 @@
 }
 
 /* 캐릭터 줄 오른쪽 끝의 수정 버튼 */
+.st-chat-setup-edit-buttons {
+    flex-shrink: 0;
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+}
+
 .st-chat-setup-edit {
     flex-shrink: 0;
     min-height: 44px;
-    margin: 0 0 0 auto;
+    margin: 0;
     padding: 0 12px;
     white-space: nowrap;
+}
+
+.st-chat-setup-edit-short {
+    display: none;
+}
+
+/* 휴대폰 작은 배치에서 버튼이 둘이면 이름이 거의 안 보이므로 [✎] [↗ ST] 로 줄인다(넓은 화면은 원래 글자) */
+.st-chat-setup-character .st-chat-setup-edit-buttons:has(.st-chat-setup-edit-full) .st-chat-setup-edit {
+    min-width: 44px;
+    padding: 0 10px;
+    justify-content: center;
+}
+
+.st-chat-setup-character .st-chat-setup-edit-buttons:has(.st-chat-setup-edit-full) .st-chat-setup-edit:not(.st-chat-setup-edit-full) span,
+.st-chat-setup-character .st-chat-setup-edit-full .st-chat-setup-edit-label {
+    display: none;
+}
+
+.st-chat-setup-character .st-chat-setup-edit-full .st-chat-setup-edit-short {
+    display: inline;
 }
 
 .st-chat-setup-modal .st-chat-setup-hint {
@@ -228,6 +255,18 @@
 
 .st-chat-setup-hero .st-chat-setup-edit {
     justify-content: center;
+}
+
+/* 큰 배치: 버튼 묶음이 칸 너비를 채우고, 두 개면 반씩 나눈다 */
+.st-chat-setup-hero .st-chat-setup-edit-buttons {
+    width: 100%;
+    margin: 0;
+}
+
+.st-chat-setup-hero .st-chat-setup-edit-buttons .st-chat-setup-edit {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 6px;
 }
 
 /* select 글자를 가운데로. 오른쪽 ▼ 자리만큼 왼쪽도 비워 진짜 가운데에 오게 한다 */
@@ -836,6 +875,15 @@ details[open] > summary > .st-chat-setup-chevron {
     .st-chat-setup-chat-search {
         min-height: 32px;
         font-size: inherit;
+    }
+
+    .st-chat-setup-character .st-chat-setup-edit-buttons:has(.st-chat-setup-edit-full) .st-chat-setup-edit:not(.st-chat-setup-edit-full) span,
+    .st-chat-setup-character .st-chat-setup-edit-full .st-chat-setup-edit-label {
+        display: inline;
+    }
+
+    .st-chat-setup-character .st-chat-setup-edit-full .st-chat-setup-edit-short {
+        display: none;
     }
 
     .st-chat-setup-chat-actions {

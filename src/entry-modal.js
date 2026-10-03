@@ -6,7 +6,7 @@ import { METADATA_KEY } from '../../../../world-info.js';
 import { createCharLoreSection } from './char-lore-section.js';
 import { createChatLoreSection } from './chat-lore-section.js';
 import { createChatSection } from './chat-section.js';
-import { EXTENSION_NAME, LOG_PREFIX, RESULT_EDIT_CHARACTER } from './constants.js';
+import { EXTENSION_NAME, LOG_PREFIX, RESULT_EDIT_CHARACTER, RESULT_EDIT_FULL } from './constants.js';
 import { enterExistingChat, enterNewChat, openCharacterEditor } from './entry-actions.js';
 import { tr } from './i18n.js';
 import { promptCreateLorebook } from './lorebook-create.js';
@@ -45,6 +45,7 @@ export async function openEntryModal(chid) {
             name: character.name,
             avatarUrl: largeAvatars && hasAvatar ? formatCharacterAvatar(character.avatar) : getThumbnailUrl('avatar', character.avatar),
             largeAvatars,
+            editBoth: getSettings().editButtonMode === 'both',
         });
     } catch (error) {
         console.error(LOG_PREFIX, 'failed to render entry modal', error);
@@ -98,9 +99,13 @@ export async function openEntryModal(chid) {
         },
     });
     popup.dlg.classList.add('st-chat-setup-popup');
-    const editButton = popup.dlg.querySelector('.st-chat-setup-edit');
+    const editButton = popup.dlg.querySelector('.st-chat-setup-edit:not(.st-chat-setup-edit-full)');
     editButton?.addEventListener('click', () => {
         popup.complete(RESULT_EDIT_CHARACTER);
+    });
+    // '둘 다' 모드에서만 있는 [ST 수정]
+    popup.dlg.querySelector('.st-chat-setup-edit-full')?.addEventListener('click', () => {
+        popup.complete(RESULT_EDIT_FULL);
     });
     // 기본 수정(ST 편집 화면) 모드면 버튼 설명도 그에 맞게. ST 가 data-i18n 을 다시 번역하므로 키를 바꾼다
     if (editButton && getSettings().editButtonMode === 'full') {
@@ -225,6 +230,8 @@ export async function openEntryModal(chid) {
     if (token !== currentToken) return;
     if (result === RESULT_EDIT_CHARACTER) {
         await editCharacter(chid, token);
+    } else if (result === RESULT_EDIT_FULL) {
+        await openCharacterEditor(chid);
     }
 }
 

@@ -14,10 +14,19 @@
                 <!-- 이름은 이미지 아래쪽에 겹쳐 둔다. 그래야 [수정]과 [페르소나 선택]이 같은 줄에 놓인다 -->
                 <div class="st-chat-setup-character-name st-chat-setup-hero-caption">{{name}}</div>
             </div>
-            <button type="button" class="st-chat-setup-edit menu_button menu_button_icon" title="Edit character without opening a chat" data-i18n="[title]chat_setup.edit_button_title">
-                <i class="fa-solid fa-pen"></i>
-                <span data-i18n="chat_setup.edit_button">Edit</span>
-            </button>
+            <!-- 설정 editButtonMode 가 both 면 [수정] 옆에 [ST 수정] -->
+            <div class="st-chat-setup-edit-buttons">
+                <button type="button" class="st-chat-setup-edit menu_button menu_button_icon" title="Edit character without opening a chat" data-i18n="[title]chat_setup.edit_button_title">
+                    <i class="fa-solid fa-pen"></i>
+                    <span data-i18n="chat_setup.edit_button">Edit</span>
+                </button>
+                {{#if editBoth}}
+                <button type="button" class="st-chat-setup-edit st-chat-setup-edit-full menu_button menu_button_icon" title="Open SillyTavern's character editor" data-i18n="[title]chat_setup.edit_button_title_full">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                    <span class="st-chat-setup-edit-label" data-i18n="chat_setup.edit_full_button">ST edit</span>
+                </button>
+                {{/if}}
+            </div>
         </div>
         <div class="st-chat-setup-hero-col">
             <label class="st-chat-setup-label" for="st_chat_setup_persona" data-i18n="chat_setup.persona">Persona</label>
@@ -36,10 +45,21 @@
         <div class="st-chat-setup-character">
             <img class="st-chat-setup-avatar" src="{{avatarUrl}}" alt="" />
             <span class="st-chat-setup-character-name">{{name}}</span>
-            <button type="button" class="st-chat-setup-edit menu_button menu_button_icon" title="Edit character without opening a chat" data-i18n="[title]chat_setup.edit_button_title">
-                <i class="fa-solid fa-pen"></i>
-                <span data-i18n="chat_setup.edit_button">Edit</span>
-            </button>
+            <!-- 설정 editButtonMode 가 both 면 [수정] 옆에 [ST 수정] -->
+            <div class="st-chat-setup-edit-buttons">
+                <button type="button" class="st-chat-setup-edit menu_button menu_button_icon" title="Edit character without opening a chat" data-i18n="[title]chat_setup.edit_button_title">
+                    <i class="fa-solid fa-pen"></i>
+                    <span data-i18n="chat_setup.edit_button">Edit</span>
+                </button>
+                {{#if editBoth}}
+                <button type="button" class="st-chat-setup-edit st-chat-setup-edit-full menu_button menu_button_icon" title="Open SillyTavern's character editor" data-i18n="[title]chat_setup.edit_button_title_full">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                    <span class="st-chat-setup-edit-label" data-i18n="chat_setup.edit_full_button">ST edit</span>
+                    <!-- 휴대폰 작은 배치에서는 이름 칸이 좁아지지 않게 짧게 -->
+                    <span class="st-chat-setup-edit-short" aria-hidden="true">ST</span>
+                </button>
+                {{/if}}
+            </div>
         </div>
     </section>
 

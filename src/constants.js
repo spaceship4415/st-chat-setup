@@ -20,6 +20,8 @@ export const CREATE = '__create__';
 
 // 입장창 결과값. POPUP_RESULT(AFFIRMATIVE=1, NEGATIVE=0, CANCELLED=null)와 겹치지 않게 2부터
 export const RESULT_EDIT_CHARACTER = 2;
+// '둘 다' 모드의 [ST 수정] 버튼
+export const RESULT_EDIT_FULL = 3;
 
 export const SETTINGS_VERSION = 2;
 
@@ -34,6 +36,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
     // 입장창의 캐릭터·페르소나 이미지 크기. 'large' 면 두 이미지를 나란히 크게(원본 이미지) 보여 준다
     avatarSize: 'small',
     // 입장창 [수정] 버튼: 'quick' = 채팅을 열지 않는 빠른 수정 창 / 'full' = 바로 ST 편집 화면
+    // / 'both' = [수정](빠른 수정)과 [ST 수정](ST 편집 화면) 두 버튼
     editButtonMode: 'quick',
     // 입장창을 열 때 처음 고를 채팅: 'new' / 'existing'(마지막으로 연 채팅) / 'remember'(지난번 입장 때 고른 방식)
     defaultChatMode: 'new',

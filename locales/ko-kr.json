@@ -39,6 +39,8 @@
     "chat_setup.setting_edit_mode": "수정 버튼",
     "chat_setup.setting_edit_quick": "간편 수정 (채팅 안 열림)",
     "chat_setup.setting_edit_full": "기본 수정 (SillyTavern 편집 화면)",
+    "chat_setup.setting_edit_both": "둘 다 (버튼 두 개)",
+    "chat_setup.edit_full_button": "ST 수정",
     "chat_setup.setting_edit_mode_hint": "기본 수정은 다른 캐릭터면 그 캐릭터의 마지막 채팅도 함께 엽니다. 지금 대화 중인 캐릭터면 채팅은 그대로입니다.",
     "chat_setup.edit_button_title_full": "SillyTavern 캐릭터 편집 화면 열기",
     "chat_setup.setting_confirm_scoped": "페르소나/캐릭터 로어북을 바꿀 때 확인",

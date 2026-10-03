@@ -1,4 +1,5 @@
 {
+    "chat_setup.persona_locked": "이 채팅에 고정된 페르소나",
     "chat_setup.settings_title": "채팅방 입장 관리",
     "chat_setup.setting_enabled": "캐릭터 선택 시 채팅방 입장 UI 사용",
     "chat_setup.setting_enabled_hint": "끄면 기존 SillyTavern처럼 캐릭터를 누르는 즉시 채팅방에 들어갑니다.",

@@ -1,5 +1,6 @@
 import { characters, is_send_press, isChatSaving, substituteParams, unshallowCharacter } from '../../../../../script.js';
 import { Popup } from '../../../../popup.js';
+import { power_user } from '../../../../power-user.js';
 import { deleteCharacterChat, isChatBusy, isOpenChat, renameCharacterChat } from './chat-manage.js';
 import { LOG_PREFIX } from './constants.js';
 import { chatFileExists, getChatList } from './data-source.js';
@@ -550,12 +551,30 @@ function createChatItem(chat, { groupName, checked, isLastOpened, isOpen, previe
     const meta = document.createElement('div');
     meta.className = 'st-chat-setup-chat-meta';
     const parts = [chat.lastDate, tr('message_count', '{0} messages').replace('{0}', String(chat.count))].filter(Boolean);
-    meta.textContent = parts.join(' · ');
+    // 조각마다 따로 줄바꿈되게 span 으로 나눈다(좁은 화면에서 '·' 만 남거나 이름이 쪼개지지 않게)
+    const stats = document.createElement('span');
+    stats.textContent = parts.join(' · ');
+    meta.append(stats);
+    // 이 채팅에 고정된 페르소나(누구로 대화했는지)
+    const personaName = getLockedPersonaName(chat.metadata?.persona);
+    if (personaName) {
+        const persona = document.createElement('span');
+        persona.className = 'st-chat-setup-chat-persona';
+        persona.title = tr('persona_locked', 'Persona locked to this chat');
+        const heart = document.createElement('i');
+        heart.className = 'fa-solid fa-heart st-chat-setup-chat-persona-icon';
+        heart.setAttribute('aria-hidden', 'true');
+        const personaLabel = document.createElement('span');
+        personaLabel.className = 'st-chat-setup-chat-persona-name';
+        personaLabel.textContent = personaName;
+        persona.append(heart, personaLabel);
+        meta.append(persona);
+    }
     if (isLastOpened) {
         const badge = document.createElement('span');
         badge.className = 'st-chat-setup-badge';
         badge.textContent = tr('last_opened', 'Last opened');
-        meta.append(' ', badge);
+        meta.append(badge);
     }
 
     const previewLine = document.createElement('div');
@@ -579,6 +598,16 @@ function createChatItem(chat, { groupName, checked, isLastOpened, isOpen, previe
 
     item.append(label, actions);
     return item;
+}
+
+/**
+ * 채팅 메타데이터의 고정 페르소나 이름. 지워진 페르소나면 파일 이름(확장자 뺀)으로 보여 준다
+ * @param {unknown} avatarId
+ */
+function getLockedPersonaName(avatarId) {
+    if (typeof avatarId !== 'string' || !avatarId) return '';
+    const name = power_user.personas?.[avatarId];
+    return typeof name === 'string' && name ? name : avatarId.replace(/\.[^.]+$/, '');
 }
 
 /**

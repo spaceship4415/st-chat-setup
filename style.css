@@ -603,6 +603,34 @@ details[open] > summary > .st-chat-setup-chevron {
     display: none;
 }
 
+.st-chat-setup-greeting-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.st-chat-setup-greeting-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.st-chat-setup-greeting-counter {
+    font-size: 0.85em;
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 좌우로 밀어 넘기는 자리: 세로 스크롤만 브라우저에 맡기고 글자 선택은 막는다 */
+.st-chat-setup-greeting-pick .st-chat-setup-greeting-preview {
+    touch-action: pan-y;
+    user-select: none;
+    cursor: grab;
+}
+
 /* 목록은 창 안에서 따로 스크롤. 휴대폰 화면 높이의 40% 정도만 차지한다 */
 .st-chat-setup-chat-list {
     display: flex;

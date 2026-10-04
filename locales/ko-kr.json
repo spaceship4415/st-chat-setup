@@ -107,6 +107,8 @@
     "chat_setup.greeting_label": "시작 인사말",
     "chat_setup.greeting_first": "첫 메시지",
     "chat_setup.greeting_alternate": "대체 인사말 {0}",
+    "chat_setup.greeting_prev": "이전 인사말",
+    "chat_setup.greeting_next": "다음 인사말",
     "chat_setup.greeting_apply_failed": "채팅에는 들어갔지만 시작 인사말을 바꾸지 못했습니다.",
     "chat_setup.setting_default_mode": "입장창을 열 때 고를 채팅",
     "chat_setup.setting_default_mode_new": "새 채팅",

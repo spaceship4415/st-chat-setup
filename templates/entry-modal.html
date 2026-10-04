@@ -89,11 +89,20 @@
             <input type="text" class="text_pole st-chat-setup-chat-name" enterkeyhint="go" autocomplete="off" maxlength="200"
                 aria-label="Chat name" data-i18n="[aria-label]chat_setup.chat_name" />
 
-            <!-- 시작 인사말: 대체 인사말이 있는 캐릭터만 보인다 -->
+            <!-- 시작 인사말: 대체 인사말이 있는 캐릭터만 보인다. 화살표나 미리보기를 좌우로 밀어 고른다 -->
             <div class="st-chat-setup-greeting-pick" hidden>
-                <label class="st-chat-setup-sublabel" for="st_chat_setup_greeting" data-i18n="chat_setup.greeting_label">Starting greeting</label>
-                <select id="st_chat_setup_greeting" class="text_pole st-chat-setup-select st-chat-setup-greeting-select"></select>
-                <div class="st-chat-setup-greeting-preview"></div>
+                <span class="st-chat-setup-sublabel" data-i18n="chat_setup.greeting_label">Starting greeting</span>
+                <div class="st-chat-setup-greeting-nav">
+                    <button type="button" class="menu_button st-chat-setup-icon-button st-chat-setup-greeting-prev" title="Previous greeting" aria-label="Previous greeting" data-i18n="[title]chat_setup.greeting_prev;[aria-label]chat_setup.greeting_prev">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span class="st-chat-setup-greeting-name" aria-live="polite"></span>
+                    <span class="st-chat-setup-greeting-counter"></span>
+                    <button type="button" class="menu_button st-chat-setup-icon-button st-chat-setup-greeting-next" title="Next greeting" aria-label="Next greeting" data-i18n="[title]chat_setup.greeting_next;[aria-label]chat_setup.greeting_next">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="st-chat-setup-greeting-preview" tabindex="0"></div>
             </div>
         </div>
 

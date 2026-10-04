@@ -46,7 +46,7 @@ Cancel, a tap outside the dialog or **Esc** closes it without changing anything.
 - Changing the chat below re-syncs this field to that chat, so pick the chat first if you want to change an existing chat's persona.
 
 ### Chat
-- **New chat:** the name is prefilled as `Character - Persona - 2026-10-03 03h08` (` (2)`, ` (3)` … added if it already exists; the date format is a setting). For characters with alternate greetings you can pick the **starting greeting**, with a preview; the others stay available as swipes. Enter on the keyboard enters the chat (ignored while an IME is composing). Names that already exist are refused, so **an existing chat is never overwritten**.
+- **New chat:** the name is prefilled as `Character - Persona - 2026-10-03 03h08` (` (2)`, ` (3)` … added if it already exists; the date format is a setting). For characters with alternate greetings you can pick the **starting greeting** by swiping the preview (or with the ‹ › buttons); the others stay available as swipes. Enter on the keyboard enters the chat (ignored while an IME is composing). Names that already exist are refused, so **an existing chat is never overwritten**.
 - **Existing chat:** most recent first, with date, message count and the last message (shown as plain text, without markdown or HTML). The last opened chat is marked and preselected.
   - With 4 or more chats, a **search box and sort menu** appear (recent / oldest / name / most messages; the sort is remembered).
   - Each chat has **rename** (✏️) and **delete** (🗑️) buttons. Deleting asks first and cannot be undone; the chat that is open right now cannot be deleted here.

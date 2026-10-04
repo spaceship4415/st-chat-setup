@@ -101,7 +101,8 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
     const searchInput = /** @type {HTMLInputElement} */ (section.querySelector('.st-chat-setup-chat-search'));
     const sortSelect = /** @type {HTMLSelectElement} */ (section.querySelector('.st-chat-setup-chat-sort'));
     const greetingBox = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-greeting-pick'));
-    const greetingSelect = /** @type {HTMLSelectElement} */ (section.querySelector('.st-chat-setup-greeting-select'));
+    const greetingName = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-greeting-name'));
+    const greetingCounter = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-greeting-counter'));
     const greetingPreview = /** @type {HTMLElement} */ (section.querySelector('.st-chat-setup-greeting-preview'));
     // 오류 칸은 버튼 바로 위(입장창 맨 아래)에 있다. 입장 실패 안내도 같은 칸을 쓴다
     const errorBox = /** @type {HTMLElement} */ (root.querySelector('.st-chat-setup-error'));
@@ -139,21 +140,50 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
     // 가벼운(shallow) 캐릭터는 대체 인사말이 아직 없을 수 있어 전체 카드를 받은 뒤 채운다
     /** @type {{ label: string, text: string }[]} */
     let greetings = [];
+    let greetingIndex = 0;
     const renderGreetingPreview = () => {
-        const greeting = greetings[Number(greetingSelect.value)] ?? greetings[0];
+        const greeting = greetings[greetingIndex];
+        greetingName.textContent = greeting?.label ?? '';
+        greetingCounter.textContent = greetings.length ? `${greetingIndex + 1}/${greetings.length}` : '';
         greetingPreview.textContent = greeting
             ? toPlainPreview(substituteParams(greeting.text, { name1Override: currentPersonaName || undefined, name2Override: character?.name }), { keepLines: true })
             : '';
     };
     const renderGreetings = () => {
         greetings = buildGreetings(characters[chid]);
-        greetingSelect.replaceChildren(...greetings.map((g, i) => new Option(g.label, String(i))));
-        greetingSelect.value = '0';
+        greetingIndex = 0;
         // 고를 게 하나뿐이면 보여 줄 필요가 없다
         greetingBox.hidden = greetings.length < 2;
         renderGreetingPreview();
     };
-    greetingSelect.addEventListener('change', renderGreetingPreview);
+    // ST 메시지 스와이프처럼 끝에서 넘기면 처음으로 돌아간다
+    const swipeGreeting = (/** @type {number} */ step) => {
+        if (greetings.length < 2) return;
+        greetingIndex = (greetingIndex + step + greetings.length) % greetings.length;
+        renderGreetingPreview();
+    };
+    section.querySelector('.st-chat-setup-greeting-prev')?.addEventListener('click', () => swipeGreeting(-1));
+    section.querySelector('.st-chat-setup-greeting-next')?.addEventListener('click', () => swipeGreeting(1));
+    greetingPreview.addEventListener('keydown', event => {
+        if (event.key === 'ArrowLeft') swipeGreeting(-1);
+        else if (event.key === 'ArrowRight') swipeGreeting(1);
+        else return;
+        event.preventDefault();
+    });
+    // 미리보기를 좌우로 밀어도 넘긴다. 세로로 미는 건 창 스크롤에 맡긴다(touch-action: pan-y)
+    /** @type {{ x: number, y: number, id: number } | null} */
+    let swipeStart = null;
+    greetingPreview.addEventListener('pointerdown', event => {
+        swipeStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    });
+    greetingPreview.addEventListener('pointerup', event => {
+        if (!swipeStart || swipeStart.id !== event.pointerId) return;
+        const dx = event.clientX - swipeStart.x;
+        const dy = event.clientY - swipeStart.y;
+        swipeStart = null;
+        if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy) * 1.5) swipeGreeting(dx < 0 ? 1 : -1);
+    });
+    greetingPreview.addEventListener('pointercancel', () => { swipeStart = null; });
     greetingBox.hidden = true;
     unshallowCharacter(chid)
         .then(() => { if (!isStale()) renderGreetings(); })
@@ -498,7 +528,7 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
         /** validate() 를 통과한 뒤의 선택값. greetingIndex 는 새 채팅의 시작 인사말(스와이프 번호) */
         getValue() {
             return mode === 'new'
-                ? { mode, fileName: sanitizeChatName(nameInput.value), greetingIndex: greetings.length > 1 ? Number(greetingSelect.value) || 0 : 0 }
+                ? { mode, fileName: sanitizeChatName(nameInput.value), greetingIndex: greetings.length > 1 ? greetingIndex : 0 }
                 : { mode, fileName: /** @type {string} */ (selectedChat), chat: chats?.find(c => c.fileName === selectedChat) };
         },
     };

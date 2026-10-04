@@ -121,7 +121,8 @@ st-chat-setup/
 │  ├─ entry-modal.js        # 모달 생성·상태·렌더·검증 (UI)
 │  ├─ entry-actions.js      # 입장 실행: enterNewChat / enterExistingChat (부작용)
 │  ├─ quick-edit.js         # 채팅을 열지 않는 캐릭터 빠른 수정
-│  ├─ duplicate.js          # 캐릭터 목록 [복제] 버튼: 바로 복제, '이름 (n)', 아바타 키 설정(추가 로어북·작가 노트·정규식 허용·페르소나 연결) 복사
+│  ├─ list-menu.js          # 캐릭터 목록 [⋯] 메뉴: 즐겨찾기(merge-attributes)·복제·삭제(ST 확인창 + deleteCharacter)
+│  ├─ duplicate.js          # 복제: 바로 복제, '이름 (n)', 아바타 키 설정(추가 로어북·작가 노트·정규식 허용·페르소나 연결) 복사
 │  ├─ i18n.js               # tr(key, english) — chat_setup.* 전용 번역
 │  └─ utils.js              # 파일명 정리, 중복 검사, 날짜 포맷
 ├─ locales/{ko,en}.json

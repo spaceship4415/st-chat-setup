@@ -6,11 +6,14 @@ export const LOG_PREFIX = '[ChatSetup]';
 export const SELECTORS = Object.freeze({
     characterList: '#rm_print_characters_block',
     characterCard: '.character_select',
+    // 캐릭터 패널 위쪽 즐겨찾기 바로가기. ST 는 여기 아바타도 .character_select 로 그려 목록과 같은 클릭 처리를 쓴다
+    favoritesBar: '#right-nav-panel .hotswap',
     // 일괄 편집(BulkEditOverlay)·레거시 일괄 선택 모드에서는 카드 클릭이 '선택' 동작이다
     bulkSelectModeClasses: ['group_overlay_mode_select', 'bulk_select'],
     bulkSelectCheckbox: '.bulk_select_checkbox',
-    // 이 확장이 목록 카드에 붙이는 [복제] 버튼
-    duplicateButton: '.st-chat-setup-dupe',
+    // 이 확장이 목록 카드에 붙이는 [⋯] 버튼과, 누르면 펼쳐지는 메뉴(즐겨찾기·복제·삭제)
+    listMenuButton: '.st-chat-setup-list-menu',
+    listMenu: '.st-chat-setup-list-popover',
 });
 
 // 드롭다운의 특수 값. 실제 페르소나/로어북 이름과 겹치지 않도록 밑줄로 감싼다
@@ -48,6 +51,6 @@ export const DEFAULT_SETTINGS = Object.freeze({
     chatNameStamp: 'minute',
     // 기존 채팅 목록 정렬(마지막으로 고른 것을 기억): 'recent' | 'oldest' | 'name' | 'messages'
     chatListSort: 'recent',
-    // 캐릭터 목록의 각 캐릭터에 [복제] 버튼(묻지 않고 '이름 (2)' 로 복제)
+    // 캐릭터 목록의 각 캐릭터에 [⋯] 메뉴(즐겨찾기, 복제: 묻지 않고 '이름 (2)' 로, 삭제: ST 확인창). 예전 [복제] 버튼 설정 키를 그대로 쓴다
     listDuplicateButton: true,
 });

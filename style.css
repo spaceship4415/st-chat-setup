@@ -870,14 +870,14 @@ details[open] > summary > .st-chat-setup-chevron {
     min-height: 44px;
 }
 
-/* 캐릭터 목록의 [복제] 버튼. 휴대폰에서 누르기 쉽게 44px */
-body:not(.charListGrid) #rm_print_characters_block:not(.group_overlay_mode_select, .bulk_select) .character_select:has(> .st-chat-setup-dupe) > .character_select_container {
+/* 캐릭터 목록의 [⋯] 버튼. 휴대폰에서 누르기 쉽게 44px */
+body:not(.charListGrid) #rm_print_characters_block:not(.group_overlay_mode_select, .bulk_select) .character_select:has(> .st-chat-setup-list-menu) > .character_select_container {
     flex: 1 1 0;
     width: auto;
     min-width: 0;
 }
 
-.st-chat-setup-dupe {
+.st-chat-setup-list-menu {
     flex: 0 0 auto;
     align-self: center;
     width: 44px;
@@ -896,21 +896,90 @@ body:not(.charListGrid) #rm_print_characters_block:not(.group_overlay_mode_selec
     cursor: pointer;
 }
 
-.st-chat-setup-dupe:hover,
-.st-chat-setup-dupe:focus-visible {
+.st-chat-setup-list-menu:hover,
+.st-chat-setup-list-menu:focus-visible,
+.st-chat-setup-list-menu[aria-expanded="true"] {
     opacity: 1;
     background-color: var(--white30a);
 }
 
-.st-chat-setup-dupe-busy {
+.st-chat-setup-list-menu-busy {
     opacity: 0.3;
     pointer-events: none;
 }
 
+/* 펼친 메뉴는 카드 안에 붙여 목록과 함께 스크롤된다. 다음 카드 위로 올라오게 카드를 띄운다 */
+#rm_print_characters_block .character_select.st-chat-setup-list-menu-open {
+    position: relative;
+    z-index: 10;
+}
+
+.st-chat-setup-list-popover {
+    position: absolute;
+    top: calc(100% - 4px);
+    right: 4px;
+    z-index: 10;
+    min-width: 190px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    background-color: var(--SmartThemeBlurTintColor);
+    backdrop-filter: blur(var(--SmartThemeBlurStrength));
+    box-shadow: 0 4px 16px var(--black50a);
+    cursor: default;
+}
+
+.st-chat-setup-list-popover-up {
+    top: auto;
+    bottom: calc(100% - 4px);
+}
+
+.st-chat-setup-list-popover > button {
+    min-height: 44px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--SmartThemeBodyColor);
+    font-size: 0.95em;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.st-chat-setup-list-popover > button > i {
+    width: 1.2em;
+    text-align: center;
+}
+
+.st-chat-setup-list-popover > button:hover,
+.st-chat-setup-list-popover > button:focus-visible {
+    background-color: var(--white30a);
+}
+
+.st-chat-setup-list-popover > button[data-action="favorite"] > i.fa-solid {
+    color: var(--golden);
+}
+
+.st-chat-setup-list-popover > button[data-action="delete"] {
+    color: #e8645a;
+}
+
+.st-chat-setup-delete-name {
+    margin-bottom: 0.75em;
+    font-weight: bold;
+    word-break: break-word;
+}
+
 /* 격자 보기는 칸이 좁고, 일괄 편집 모드에서는 카드 클릭이 선택이라 숨긴다 */
-body.charListGrid #rm_print_characters_block .st-chat-setup-dupe,
-#rm_print_characters_block.group_overlay_mode_select .st-chat-setup-dupe,
-#rm_print_characters_block.bulk_select .st-chat-setup-dupe {
+body.charListGrid #rm_print_characters_block .st-chat-setup-list-menu,
+#rm_print_characters_block.group_overlay_mode_select .st-chat-setup-list-menu,
+#rm_print_characters_block.bulk_select .st-chat-setup-list-menu {
     display: none;
 }
 

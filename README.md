@@ -74,16 +74,22 @@ For name, avatar, tags and the rest, *Open full editor* opens SillyTavern's own 
 
 ---
 
-## Duplicate
+## Character list menu (favorite, duplicate, delete)
 
-Each character in the character list gets a **duplicate button** (on by default). It duplicates right away, without opening the editor or asking.
+Each character in the character list gets a **⋯ button** (on by default) that opens a small menu, so the name keeps its room on phones. Tap outside or press Esc to close it.
+
+- **Add to / Remove from favorites**: same as SillyTavern's ★; the favorites bar updates right away.
+- **Delete character**: SillyTavern's own delete dialog (with the character's name on top and the *Also delete the chat files* option). As in SillyTavern, deleting closes the chat that is open.
+- **Duplicate character**: duplicates right away, without opening the editor or asking (below).
+
+### Duplicate
 
 - The copy is named **`Name (2)`**, or the next free number (`(3)`, `(4)` …). Duplicating `Seraphina (2)` gives `Seraphina (3)`, not `Seraphina (2) (2)`.
 - Everything in the card (description, greetings, embedded lorebook, regex scripts …) and tags come along, as with SillyTavern's own duplicate.
 - Settings SillyTavern keeps outside the card, keyed by the avatar file, are copied too: **additional lorebooks, the character's author's note, regex permission and persona lock**.
 - Linked lorebooks are **shared**, not copied: editing the lorebook affects both characters.
 - **Chats are not copied.** The copy starts with no chats.
-- Hidden in grid view and bulk-edit mode.
+- The ⋯ button is hidden in grid view and bulk-edit mode.
 
 ---
 
@@ -97,7 +103,7 @@ Each character in the character list gets a **duplicate button** (on by default)
 | Chat selected when the dialog opens | *New chat* (default), *Existing chat (last opened)* or *Remember my last choice*. Characters without chats always start on New chat |
 | Date in new chat names | *SillyTavern default* (`2026-10-03@03h08m20s063ms`), *Date* (`2026-10-03`), *Date + hour:minute* (`2026-10-03 03h08`, default) or *Date + hour:minute:second* (`2026-10-03 03h08m20s`). `:` is not allowed in file names, hence `03h08` |
 | Shift/Ctrl/Alt + click opens the chat immediately | Desktop shortcut to skip the dialog |
-| Duplicate button in the character list | On by default. See [Duplicate](#duplicate) |
+| ⋯ menu in the character list | On by default. See [Character list menu](#character-list-menu-favorite-duplicate-delete) |
 | Also show the dialog when clicking the current character | On by default. Off = clicking the current character opens its card editor |
 | Edit button | *Quick edit* (default): the quick editor, no chat opened. *Full editor*: straight to SillyTavern's editor (opens the character's last chat too, unless it is the current character). *Both*: both buttons (shortened to icon / "ST" in the small layout on phones) |
 | Images in the entry dialog | *Small* (default) or *Large (side by side)*: the character and persona images shown big, at full resolution, with Edit and the persona picker below them |
@@ -107,7 +113,7 @@ Each character in the character list gets a **duplicate button** (on by default)
 
 ## Notes
 
-- Only clicks in the **character list** open the dialog. Recent chats on the welcome screen, slash commands (`/go` …) and group chats keep SillyTavern's own behaviour.
+- Only clicks in the **character list** (and the favorites bar above it) open the dialog. Recent chats on the welcome screen, slash commands (`/go` …) and group chats keep SillyTavern's own behaviour.
 - In bulk-edit mode a click selects the character, so no dialog opens.
 - While entering, the dialog stays open showing *Entering…*. If entering fails, it stays open with the reason so you can retry, and any empty chat file created by the attempt is removed.
 - Developed and tested against SillyTavern 1.19.0 (`staging`). Design notes: [docs/DESIGN.md](docs/DESIGN.md) (Korean).

@@ -25,10 +25,10 @@ export function installInterceptor(handler) {
  */
 function onCaptureClick(event) {
     if (!(event.target instanceof Element)) return;
-    // [복제] 버튼은 duplicate.js 가 처리한다
-    if (event.target.closest(SELECTORS.duplicateButton)) return;
+    // [⋯] 버튼과 그 메뉴는 list-menu.js 가 처리한다
+    if (event.target.closest(`${SELECTORS.listMenuButton}, ${SELECTORS.listMenu}`)) return;
 
-    const card = event.target.closest(`${SELECTORS.characterList} ${SELECTORS.characterCard}`);
+    const card = event.target.closest(`${SELECTORS.characterList} ${SELECTORS.characterCard}, ${SELECTORS.favoritesBar} ${SELECTORS.characterCard}`);
     if (!(card instanceof HTMLElement)) return;
 
     const chid = Number(card.dataset.chid);

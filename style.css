@@ -936,6 +936,18 @@ body:not(.charListGrid) #rm_print_characters_block:not(.group_overlay_mode_selec
     pointer-events: none;
 }
 
+/* 즐겨찾기 카드는 이름 옆에 별. 테마가 이름 색만 바꾸면 잘 안 보여서 금색으로 고정 */
+#rm_print_characters_block :is(.character_select, .group_select).is_fav .ch_name::after {
+    content: "\f005";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-style: normal;
+    margin-left: 0.35em;
+    font-size: 0.8em;
+    color: var(--golden);
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.6));
+}
+
 /* 펼친 메뉴는 카드 안에 붙여 목록과 함께 스크롤된다. 다음 카드 위로 올라오게 카드를 띄운다 */
 #rm_print_characters_block .character_select.st-chat-setup-list-menu-open {
     position: relative;

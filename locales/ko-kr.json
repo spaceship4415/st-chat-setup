@@ -120,7 +120,7 @@
     "chat_setup.stamp_date": "날짜",
     "chat_setup.stamp_minute": "날짜 + 시:분",
     "chat_setup.stamp_second": "날짜 + 시:분:초",
-    "chat_setup.stamp_number": "날짜 없이 번호만",
+    "chat_setup.stamp_short": "짧게 (yymmdd-hhmm)",
     "chat_setup.setting_default_mode_hint":"아직 채팅이 없는 캐릭터는 새 채팅이 선택됩니다.",
     "chat_setup.chat_list_loading": "채팅 목록을 불러오는 중…",
     "chat_setup.chat_list_failed": "채팅 목록을 불러오지 못했습니다.",

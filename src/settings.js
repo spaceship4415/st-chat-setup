@@ -16,6 +16,9 @@ export function loadSettings() {
         }
     }
 
+    // 잠깐 있었던 '번호만' 형식은 짧은 날짜로 바뀌었다
+    if (settings.chatNameStamp === 'number') settings.chatNameStamp = 'short';
+
     migrate(settings);
 
     extension_settings[MODULE_NAME] = settings;

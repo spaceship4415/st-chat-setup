@@ -43,9 +43,10 @@ function fillChatNameStampOptions() {
         date: tr('stamp_date', 'Date'),
         minute: tr('stamp_minute', 'Date + hour:minute'),
         second: tr('stamp_second', 'Date + hour:minute:second'),
+        number: tr('stamp_number', 'No date, number only'),
     };
     const now = new Date();
-    select.replaceChildren(...CHAT_STAMP_STYLES.map(style => new Option(`${labels[style]} — ${formatChatStamp(style, now)}`, style)));
+    select.replaceChildren(...CHAT_STAMP_STYLES.map(style => new Option(`${labels[style]} — ${style === 'number' ? '(1), (2), (3)…' : formatChatStamp(style, now)}`, style)));
 }
 
 jQuery(async () => {

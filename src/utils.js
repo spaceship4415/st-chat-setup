@@ -27,10 +27,10 @@ export function sanitizeChatName(name) {
     return result.replace(/[. ]+$/, '');
 }
 
-/** @typedef {'st' | 'date' | 'minute' | 'second'} ChatStampStyle */
+/** @typedef {'st' | 'date' | 'minute' | 'second' | 'number'} ChatStampStyle */
 
 /** 설정 화면에 보일 순서 */
-export const CHAT_STAMP_STYLES = /** @type {const} */ (['st', 'date', 'minute', 'second']);
+export const CHAT_STAMP_STYLES = /** @type {const} */ (['st', 'date', 'minute', 'second', 'number']);
 
 /**
  * 새 채팅 기본 이름에 붙이는 날짜·시각(설정 chatNameStamp).
@@ -38,12 +38,14 @@ export const CHAT_STAMP_STYLES = /** @type {const} */ (['st', 'date', 'minute', 
  * - date: 2026-10-03
  * - minute: 2026-10-03 03h08 (기본)
  * - second: 2026-10-03 03h08m20s
+ * - number: 날짜 없이 번호만. 날짜 자리는 비우고 이름 뒤에 (1), (2) … 를 붙인다(chat-section)
  * 채팅 이름은 파일 이름이라 ':' 를 쓸 수 없다(서버가 지운다). 그래서 ST 처럼 h·m·s 로 쓴다.
  * @param {ChatStampStyle | string} [style]
  * @param {Date} [date]
  */
 export function formatChatStamp(style = 'minute', date = new Date()) {
     if (style === 'st') return humanizedDateTime(date.getTime());
+    if (style === 'number') return '';
 
     const pad = (/** @type {number} */ n) => String(n).padStart(2, '0');
     const day = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;

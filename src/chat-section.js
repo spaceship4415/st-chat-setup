@@ -115,6 +115,7 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
     // ── 새 채팅 기본 이름 ──
     // '캐릭터 - 페르소나 - 날짜·시각'(형식은 설정). 시각은 창을 연 때로 고정하고, 페르소나가 바뀌면 그 부분만 바꾼다.
     // 날짜·분 단위면 같은 이름이 이미 있을 수 있으므로 목록을 받은 뒤 ' (2)', ' (3)' … 을 붙인다.
+    // 번호 형식(number)은 날짜 없이 처음부터 ' (1)' 을 붙이고 비어 있는 가장 작은 번호를 쓴다.
     // 사용자가 이름을 직접 고치면 더는 건드리지 않는다
     const stamp = formatChatStamp(stampStyle);
     let currentPersonaName = personaName;
@@ -123,8 +124,9 @@ export function createChatSection(root, { chid, isStale, onSubmit, onChange = ()
         const base = [character?.name ?? '', currentPersonaName, stamp]
             .filter(part => part && part.trim())
             .join(' - ');
-        if (!chats) return base;
-        let candidate = base;
+        const numbered = stampStyle === 'number';
+        if (!chats) return numbered ? `${base} (1)` : base;
+        let candidate = numbered ? `${base} (1)` : base;
         for (let n = 2; isDuplicateChatName(sanitizeChatName(candidate), chats); n++) {
             candidate = `${base} (${n})`;
         }
